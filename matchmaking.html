@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CourtReserve - Matchmaking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Tailwind & Styles (Consistent) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            // Same color config
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    /* Same utilities as other pages */
+  </style>
+</head>
+<body>
+  <!-- Navigation with "Matchmaking" active -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      
+      <!-- Mobile menu (same as others) -->
+    </div>
+  </nav>
+
+  <!-- Main Content: Matchmaking Feed -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <section id="matchmaking" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <!-- Same matchmaking content as original code -->
+    </section>
+  </main>
+
+  <!-- Footer (Same) -->
+  <footer>
+    <!-- Same footer -->
+  </footer>
+
+  <script>
+    // Mobile menu toggle + matchmaking-specific JS if needed
+  </script>
+</body>
+</html>
