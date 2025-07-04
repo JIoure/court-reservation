@@ -305,65 +305,61 @@
       
       <!-- Map Container -->
       <div class="relative h-[400px] rounded-xl overflow-hidden shadow-md border border-neutral-200">
-        <!-- Map Sketch with Overlay -->
-        <div class="absolute inset-0 bg-neutral-100 flex items-center justify-center">
-          <img src="https://picsum.photos/1200/800" alt="Map background" class="w-full h-full object-cover opacity-80">
-          
-          <!-- Map Overlay with Pins -->
-          <div class="absolute inset-0">
-            <!-- Court Pins -->
-            <div class="absolute top-[30%] left-[25%] group">
-              <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
-                <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
-              </div>
-              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <h4 class="font-bold text-neutral-800">City Tennis Center</h4>
-                <p class="text-sm text-neutral-600">12 available courts</p>
-                <div class="flex items-center mt-1">
-                  <div class="h-2 bg-success rounded-full" style="width: 80%"></div>
-                  <span class="ml-2 text-xs text-neutral-500">80% available</span>
-                </div>
-              </div>
+        <img src="https://picsum.photos/1200/800" alt="Map background" class="w-full h-full object-cover opacity-80">
+        
+        <!-- Map Overlay with Pins -->
+        <div class="absolute inset-0">
+          <div class="absolute top-[30%] left-[25%] group">
+            <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
             </div>
-            
-            <div class="absolute top-[45%] left-[60%] group">
-              <div class="w-6 h-6 bg-danger rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
-                <div class="absolute -top-1 -left-1 w-8 h-8 bg-danger/30 rounded-full animate-ping"></div>
-              </div>
-              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <h4 class="font-bold text-neutral-800">Westside Courts</h4>
-                <p class="text-sm text-neutral-600">2 available courts</p>
-                <div class="flex items-center mt-1">
-                  <div class="h-2 bg-danger rounded-full" style="width: 20%"></div>
-                  <span class="ml-2 text-xs text-neutral-500">20% available</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="absolute top-[65%] left-[40%] group">
-              <div class="w-6 h-6 bg-warning rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
-                <div class="absolute -top-1 -left-1 w-8 h-8 bg-warning/30 rounded-full animate-ping"></div>
-              </div>
-              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <h4 class="font-bold text-neutral-800">Eastview Park Courts</h4>
-                <p class="text-sm text-neutral-600">5 available courts</p>
-                <div class="flex items-center mt-1">
-                  <div class="h-2 bg-warning rounded-full" style="width: 50%"></div>
-                  <span class="ml-2 text-xs text-neutral-500">50% available</span>
-                </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">City Tennis Center</h4>
+              <p class="text-sm text-neutral-600">12 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-success rounded-full" style="width: 80%"></div>
+                <span class="ml-2 text-xs text-neutral-500">80% available</span>
               </div>
             </div>
           </div>
           
-          <!-- Map Controls -->
-          <div class="absolute bottom-4 right-4 flex flex-col space-y-2">
-            <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
-              <i class="fa-solid fa-plus text-neutral-700"></i>
-            </button>
-            <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
-              <i class="fa-solid fa-minus text-neutral-700"></i>
-            </button>
+          <div class="absolute top-[45%] left-[60%] group">
+            <div class="w-6 h-6 bg-danger rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-danger/30 rounded-full animate-ping"></div>
+            </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">Westside Courts</h4>
+              <p class="text-sm text-neutral-600">2 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-danger rounded-full" style="width: 20%"></div>
+                <span class="ml-2 text-xs text-neutral-500">20% available</span>
+              </div>
+            </div>
           </div>
+          
+          <div class="absolute top-[65%] left-[40%] group">
+            <div class="w-6 h-6 bg-warning rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-warning/30 rounded-full animate-ping"></div>
+            </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">Eastview Park Courts</h4>
+              <p class="text-sm text-neutral-600">5 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-warning rounded-full" style="width: 50%"></div>
+                <span class="ml-2 text-xs text-neutral-500">50% available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Map Controls -->
+        <div class="absolute bottom-4 right-4 flex flex-col space-y-2">
+          <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+            <i class="fa-solid fa-plus text-neutral-700"></i>
+          </button>
+          <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+            <i class="fa-solid fa-minus text-neutral-700"></i>
+          </button>
         </div>
       </div>
       
@@ -912,6 +908,17 @@
           slot.textContent = 'Booked';
         }
       });
+    });
+
+    // 页面加载后自动滚动到 Availability 区域（日历部分）
+    document.addEventListener('DOMContentLoaded', () => {
+      const calendarSection = document.getElementById('calendar');
+      if (calendarSection) {
+        window.scrollTo({
+          top: calendarSection.offsetTop - 80, // 减去导航栏高度，避免被遮挡
+          behavior: 'smooth' // 平滑滚动效果
+        });
+      }
     });
   </script>
 </body>
