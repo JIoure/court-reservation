@@ -135,18 +135,118 @@
       </div>
       <div class="overflow-x-auto">
         <div class="calendar-grid gap-2 min-w-[800px]">
-          <!-- 时间标签和日期标题（示例数据，可替换为实际日期） -->
+          <!-- 时间标签和日期标题 -->
           <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg"></div>
           <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
             <div class="font-bold">Mon</div>
             <div class="text-sm text-neutral-400">10-Jun</div>
           </div>
-          <!-- 其他日期标题（重复7列，示例略） -->
-          <!-- 时间槽（示例数据，Free和Booked交替） -->
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Tue</div>
+            <div class="text-sm text-neutral-400">11-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Wed</div>
+            <div class="text-sm text-neutral-400">12-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Thu</div>
+            <div class="text-sm text-neutral-400">13-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Fri</div>
+            <div class="text-sm text-neutral-400">14-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Sat</div>
+            <div class="text-sm text-neutral-400">15-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tr-lg">
+            <div class="font-bold">Sun</div>
+            <div class="text-sm text-neutral-400">16-Jun</div>
+          </div>
+          
+          <!-- 时间槽 -->
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">06:00</div>
           <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Mon">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Tue">Booked</div>
-          <!-- 其他时间槽（重复至22:00，示例略） -->
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sun">Free</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">08:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sun">Booked</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">10:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sun">Free</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">12:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Sun">Booked</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">14:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Sun">Free</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">16:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Sun">Free</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">18:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Sun">Free</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">20:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Sun">Booked</div>
+          
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium rounded-bl-lg">22:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sun">Booked</div>
         </div>
       </div>
       <div class="flex justify-between items-center mt-6">
@@ -164,33 +264,97 @@
   <!-- 页脚 -->
   <footer class="bg-neutral-800 text-white py-12">
     <div class="container mx-auto px-4">
-      <!-- 页脚内容（与原始代码一致，示例略） -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+            <span class="text-xl font-bold">CourtReserve</span>
+          </div>
+          <p class="text-neutral-400 mb-4">Find and book tennis courts near you with ease.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Home</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Book Now</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Pricing</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Support</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQs</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">123 Tennis Street, City Center, 10001</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">+1 (555) 123-4567</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">info@courtreserve.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-neutral-700 mt-8 pt-8 text-center text-neutral-400">
+        <p>&copy; 2025 CourtReserve. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
   <script>
-    // 移动端菜单切换（原有代码）
+    // 移动端菜单切换
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
     mobileMenuButton.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
 
-    // 时间槽预订逻辑（修改后）
+    // 时间槽交互和预订逻辑
     document.querySelectorAll('.time-slot-available').forEach(slot => {
+      slot.addEventListener('mouseenter', () => {
+        slot.classList.add('shadow-md', 'scale-105');
+      });
+      slot.addEventListener('mouseleave', () => {
+        slot.classList.remove('shadow-md', 'scale-105');
+      });
       slot.addEventListener('click', () => {
         if (confirm(`Book this time slot?\n${slot.dataset.day}, ${slot.dataset.time}`)) {
-          const bookingInfo = {
+          // 保存预订信息到localStorage
+          localStorage.setItem('bookingInfo', JSON.stringify({
             day: slot.dataset.day,
             time: slot.dataset.time,
-            location: 'City Tennis Center',
-            court: `Court #${Math.floor(Math.random() * 12) + 1}`
-          };
-          localStorage.setItem('bookingInfo', JSON.stringify(bookingInfo));
+            location: 'City Tennis Center'
+          }));
+          // 跳转到确认页面
           window.location.href = 'confirmation.html';
         }
       });
     });
   </script>
 </body>
-</html>
+</html>  
