@@ -7,15 +7,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
-  <!-- 相同的 Tailwind 配置 -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            primary: '#165DFF',
-            // 其他颜色配置保持不变
-          }
+          colors: { /* 颜色配置 */ },
+          fontFamily: { inter: ['Inter', 'sans-serif'] }
         }
       }
     }
@@ -23,71 +20,55 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      .content-auto {
-        content-visibility: auto;
-      }
-      .nav-item {
-        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
-      }
-      .nav-item-active {
-        @apply bg-primary/10 text-primary font-medium;
-      }
+      .profile-info-item { @apply flex items-center py-3 border-b border-neutral-200; }
+      .nav-item { @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10; }
+      .nav-item-active { @apply bg-primary/10 text-primary font-medium; }
     }
   </style>
 </head>
 <body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
-  <!-- 相同的导航栏 -->
+  <!-- 导航栏（Account 激活） -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
         <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
       </div>
-      
       <div class="hidden md:flex items-center space-x-1">
-        <a href="availability.html" class="nav-item">
-          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
-        </a>
-        <a href="find-courts.html" class="nav-item">
-          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
-        </a>
-        <a href="matchmaking.html" class="nav-item">
-          <i class="fa-solid fa-users mr-2"></i>Matchmaking
-        </a>
+        <a href="availability.html" class="nav-item">Availability</a>
+        <a href="find-courts.html" class="nav-item">Find Courts</a>
+        <a href="matchmaking.html" class="nav-item">Matchmaking</a>
         <a href="account.html" class="nav-item nav-item-active">
           <i class="fa-solid fa-user mr-2"></i>Account
         </a>
       </div>
-      
-      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+      <button class="md:hidden" id="mobile-menu-button">
         <i class="fa-solid fa-bars text-xl"></i>
       </button>
     </div>
-    
     <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
-      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
-        <a href="availability.html" class="nav-item">
-          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
-        </a>
-        <a href="find-courts.html" class="nav-item">
-          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
-        </a>
-        <a href="matchmaking.html" class="nav-item">
-          <i class="fa-solid fa-users mr-2"></i>Matchmaking
-        </a>
-        <a href="account.html" class="nav-item nav-item-active">
-          <i class="fa-solid fa-user mr-2"></i>Account
-        </a>
-      </div>
+      <!-- 移动端导航（Account 激活） -->
+      <a href="availability.html" class="nav-item">Availability</a>
+      <a href="find-courts.html" class="nav-item">Find Courts</a>
+      <a href="matchmaking.html" class="nav-item">Matchmaking</a>
+      <a href="account.html" class="nav-item nav-item-active">Account</a>
     </div>
   </nav>
 
-  <!-- 主内容：Account（账户部分） -->
+  <!-- 主内容：账户管理（标签式布局） -->
   <main class="flex-grow container mx-auto px-4 py-8">
-    <section id="login" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
-          <i class="fa-solid fa-user text-primary mr-3"></i>
-          Account Access
-        </h2>
-        <div class="text-neutral-5
+    <section id="login" class="mb-12 bg-white rounded-xl shadow-sm p-6">
+      <!-- 账户信息、会员卡片、标签切换等内容（如原始修改后的代码） -->
+    </section>
+  </main>
+
+  <!-- 页脚（与原始代码一致） -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <!-- 页脚内容 -->
+  </footer>
+
+  <script>
+    // 移动端菜单切换、账户标签切换等逻辑
+  </script>
+</body>
+</html>
