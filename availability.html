@@ -49,6 +49,9 @@
       .time-slot-booked {
         @apply bg-danger/10 border border-danger/30 cursor-not-allowed;
       }
+      .time-slot-selected {
+        @apply bg-primary/20 border border-primary/50;
+      }
       .nav-item {
         @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
       }
@@ -111,8 +114,8 @@
           Court Availability
         </h2>
         <div class="flex space-x-2">
-          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
-            <i class="fa-solid fa-plus mr-2"></i>Book Court
+          <button id="book-selected" class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center opacity-50 cursor-not-allowed" disabled>
+            <i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (0)
           </button>
           <div class="relative">
             <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
@@ -131,6 +134,10 @@
         <div class="flex items-center">
           <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div>
           <span class="text-sm text-neutral-600">Booked</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-primary/20 border border-primary/50 mr-2"></div>
+          <span class="text-sm text-neutral-600">Selected</span>
         </div>
       </div>
       <div class="overflow-x-auto">
@@ -177,7 +184,7 @@
           <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sun">Free</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">08:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Mon">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Tue">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Wed">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Thu">Free</div>
@@ -186,16 +193,16 @@
           <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sun">Booked</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">10:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Mon">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Wed">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Thu">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Fri">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sat">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sun">Free</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">12:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Mon">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Tue">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Wed">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Thu">Free</div>
@@ -204,16 +211,16 @@
           <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Sun">Booked</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">14:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Mon">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Tue">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Wed">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Thu">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Fri">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Sat">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Sun">Free</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">16:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Mon">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Tue">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Wed">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Thu">Booked</div>
@@ -226,23 +233,23 @@
           <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Tue">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Wed">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Fri">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Sun">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Sun">Booked</div>
           
           <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">20:00</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Mon">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Tue">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Wed">Booked</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Thu">Booked</div>
           <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Fri">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sat">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Sun">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sun">Free</div>
           
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium rounded-bl-lg">22:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Wed">Booked</div>
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">22:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Wed">Free</div>
           <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Thu">Free</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Fri">Booked</div>
           <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sat">Booked</div>
@@ -257,6 +264,88 @@
         <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
           Next Week<i class="fa-solid fa-chevron-right ml-2"></i>
         </button>
+      </div>
+    </section>
+    
+    <!-- 推荐内容 -->
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-xl font-bold text-neutral-800 mb-6">Recommended Courts</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">City Center Tennis Club</h4>
+            <div class="flex items-center mb-2">
+              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
+              <span class="text-sm text-neutral-600">Downtown, 10001</span>
+            </div>
+            <div class="flex items-center mb-3">
+              <div class="flex">
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+              </div>
+              <span class="text-sm text-neutral-500 ml-2">4.5 (128 reviews)</span>
+            </div>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              View Courts
+            </button>
+          </div>
+        </div>
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">Westside Tennis Courts</h4>
+            <div class="flex items-center mb-2">
+              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
+              <span class="text-sm text-neutral-600">Westside, 10002</span>
+            </div>
+            <div class="flex items-center mb-3">
+              <div class="flex">
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-neutral-300"></i>
+              </div>
+              <span class="text-sm text-neutral-500 ml-2">4.0 (95 reviews)</span>
+            </div>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              View Courts
+            </button>
+          </div>
+        </div>
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">Eastview Tennis Complex</h4>
+            <div class="flex items-center mb-2">
+              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
+              <span class="text-sm text-neutral-600">Eastview, 10003</span>
+            </div>
+            <div class="flex items-center mb-3">
+              <div class="flex">
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <i class="fa-solid fa-star text-yellow-400"></i>
+              </div>
+              <span class="text-sm text-neutral-500 ml-2">5.0 (73 reviews)</span>
+            </div>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              View Courts
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -334,26 +423,60 @@
       mobileMenu.classList.toggle('hidden');
     });
 
-    // 时间槽交互和预订逻辑
+    // 时间槽多选逻辑
+    const selectedSlots = [];
+    const bookButton = document.getElementById('book-selected');
+    
     document.querySelectorAll('.time-slot-available').forEach(slot => {
-      slot.addEventListener('mouseenter', () => {
-        slot.classList.add('shadow-md', 'scale-105');
-      });
-      slot.addEventListener('mouseleave', () => {
-        slot.classList.remove('shadow-md', 'scale-105');
-      });
       slot.addEventListener('click', () => {
-        if (confirm(`Book this time slot?\n${slot.dataset.day}, ${slot.dataset.time}`)) {
-          // 保存预订信息到localStorage
-          localStorage.setItem('bookingInfo', JSON.stringify({
-            day: slot.dataset.day,
-            time: slot.dataset.time,
-            location: 'City Tennis Center'
-          }));
-          // 跳转到确认页面
-          window.location.href = 'confirmation.html';
+        // 切换选中状态
+        slot.classList.toggle('time-slot-selected');
+        
+        const slotData = {
+          day: slot.dataset.day,
+          time: slot.dataset.time
+        };
+        
+        // 更新选中列表
+        if (slot.classList.contains('time-slot-selected')) {
+          selectedSlots.push(slotData);
+        } else {
+          const index = selectedSlots.findIndex(s => 
+            s.day === slotData.day && s.time === slotData.time
+          );
+          if (index !== -1) {
+            selectedSlots.splice(index, 1);
+          }
         }
+        
+        // 更新按钮状态
+        updateBookButton();
       });
+    });
+    
+    // 更新预订按钮状态
+    function updateBookButton() {
+      if (selectedSlots.length > 0) {
+        bookButton.disabled = false;
+        bookButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (${selectedSlots.length})`;
+      } else {
+        bookButton.disabled = true;
+        bookButton.classList.add('opacity-50', 'cursor-not-allowed');
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (0)`;
+      }
+    }
+    
+    // 预订选中的时间槽
+    bookButton.addEventListener('click', () => {
+      if (selectedSlots.length > 0) {
+        localStorage.setItem('bookingInfo', JSON.stringify({
+          slots: selectedSlots,
+          location: 'City Tennis Center',
+          court: `Court #${Math.floor(Math.random() * 12) + 1}`
+        }));
+        window.location.href = 'confirmation.html';
+      }
     });
   </script>
 </body>
