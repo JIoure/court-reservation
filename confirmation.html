@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
-  <!-- 相同的 Tailwind 配置 -->
+  <!-- 保持与其他页面一致的 Tailwind 配置 -->
   <script>
     tailwind.config = {
       theme: {
@@ -49,11 +49,19 @@
       .card-hover {
         @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
       }
+      .pulse-animation {
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
     }
   </style>
 </head>
 <body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
-  <!-- 相同的导航栏（Availability 激活） -->
+  <!-- 导航栏（与其他页面一致，保持Availability激活） -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -99,24 +107,26 @@
     </div>
   </nav>
 
-  <!-- 主内容：Confirmation 确认页面 -->
+  <!-- 主内容：优化后的Confirmation页面 -->
   <main class="flex-grow container mx-auto px-4 py-8">
     <section class="mb-12 bg-white rounded-xl shadow-sm p-6 md:p-8 transform transition-all duration-500 hover:shadow-md">
+      <!-- 成功提示（增强视觉反馈） -->
       <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4 pulse-animation">
           <i class="fa-solid fa-check text-2xl text-success"></i>
         </div>
         <h2 class="text-2xl md:text-3xl font-bold text-neutral-800 mb-2">Booking Confirmed!</h2>
-        <p class="text-neutral-600">Your court reservation has been successfully processed.</p>
-        <div class="mt-4 inline-block bg-primary/10 text-primary text-sm px-4 py-1 rounded-full">
-          Booking Reference: <span class="font-medium">CR-25689</span>
+        <p class="text-neutral-600">Your court reservation at <span class="font-medium text-primary">City Tennis Center</span> is complete.</p>
+        <!-- 突出显示预订编号（用户可能需要记录） -->
+        <div class="mt-4 inline-block bg-primary/10 text-primary text-sm px-4 py-1.5 rounded-full font-medium">
+          Booking Reference: <span class="font-bold">CR-25689</span>
         </div>
       </div>
       
-      <!-- 预订详情卡片 -->
+      <!-- 预订详情卡片（强化与选择的关联性） -->
       <div class="bg-neutral-50 rounded-xl p-6 mb-8 border border-neutral-200">
         <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center">
-          <i class="fa-solid fa-calendar-check text-primary mr-2"></i>Booking Details
+          <i class="fa-solid fa-calendar-check text-primary mr-2"></i>Your Booking Details
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,10 +135,15 @@
               <p class="text-sm text-neutral-500 mb-1">Court Location</p>
               <p class="font-medium text-neutral-800">City Tennis Center</p>
               <p class="text-sm text-neutral-600">123 Tennis Avenue, Victoria, BC</p>
+              <!-- 新增：快速导航链接 -->
+              <a href="https://maps.baidu.com/search/123+Tennis+Avenue" target="_blank" class="text-xs text-primary hover:underline mt-1 inline-block">
+                <i class="fa-solid fa-map-pin mr-1"></i>View on Map
+              </a>
             </div>
             
             <div class="mb-4">
               <p class="text-sm text-neutral-500 mb-1">Date & Time</p>
+              <!-- 明确显示用户选择的时段（与availability.html对应） -->
               <p class="font-medium text-neutral-800">Wednesday, June 12, 2025</p>
               <p class="text-sm text-neutral-600">06:00 PM - 08:00 PM (2 hours)</p>
             </div>
@@ -154,20 +169,21 @@
             <div>
               <p class="text-sm text-neutral-500 mb-1">Total Amount</p>
               <p class="font-bold text-xl text-primary">$50.00</p>
-              <p class="text-xs text-neutral-500">Including all taxes and fees</p>
+              <p class="text-xs text-neutral-500">Including taxes ($5.00) and facility fee ($2.50)</p>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- 附加信息 -->
+      <!-- 附加信息（更实用的场景化内容） -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
           <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
             <i class="fa-solid fa-clock text-primary"></i>
           </div>
           <h4 class="font-bold text-neutral-800 mb-2">Check-in Information</h4>
-          <p class="text-sm text-neutral-600">Please arrive 15 minutes before your scheduled time to check-in at the front desk.</p>
+          <p class="text-sm text-neutral-600">Please arrive 15 minutes early to check-in at the front desk. Late check-in may result in loss of reservation.</p>
+          <p class="text-xs text-primary mt-2">Front desk: (250) 555-6789</p>
         </div>
         
         <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
@@ -175,29 +191,43 @@
             <i class="fa-solid fa-refresh text-primary"></i>
           </div>
           <h4 class="font-bold text-neutral-800 mb-2">Cancellation Policy</h4>
-          <p class="text-sm text-neutral-600">Free cancellation up to 24 hours before your booking. No refunds for late cancellations.</p>
+          <p class="text-sm text-neutral-600">Free cancellation up to 24 hours before booking. Cancellations within 24 hours will be charged 50% of the total amount.</p>
+          <button class="text-xs text-primary hover:underline mt-2 flex items-center">
+            <i class="fa-solid fa-edit mr-1"></i>Modify or cancel booking
+          </button>
         </div>
         
         <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
           <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
-            <i class="fa-solid fa-ticket text-primary"></i>
+            <i class="fa-solid fa-calendar-plus text-primary"></i>
           </div>
-          <h4 class="font-bold text-neutral-800 mb-2">Booking Ticket</h4>
-          <p class="text-sm text-neutral-600">A confirmation email with your booking ticket has been sent to your registered email address.</p>
+          <h4 class="font-bold text-neutral-800 mb-2">Add to Calendar</h4>
+          <p class="text-sm text-neutral-600">Sync your booking with your calendar to get reminders and avoid missing your reservation.</p>
+          <div class="flex space-x-2 mt-2">
+            <a href="#" class="text-xs bg-[#0078D4]/10 text-[#0078D4] px-2 py-1 rounded hover:bg-[#0078D4]/20 transition-colors">
+              <i class="fa-solid fa-calendar-check"></i> Outlook
+            </a>
+            <a href="#" class="text-xs bg-[#DB4437]/10 text-[#DB4437] px-2 py-1 rounded hover:bg-[#DB4437]/20 transition-colors">
+              <i class="fa-solid fa-calendar-check"></i> Google
+            </a>
+          </div>
         </div>
       </div>
       
-      <!-- 操作按钮 -->
+      <!-- 操作按钮（优化返回逻辑和新增实用功能） -->
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <!-- 返回按钮（明确指向availability页面） -->
         <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center">
           <i class="fa-solid fa-arrow-left mr-2"></i>Back to Availability
         </button>
         
         <div class="flex gap-4">
-          <button class="px-6 py-3 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          <!-- 下载票据（增加点击反馈提示） -->
+          <button class="px-6 py-3 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center" id="download-ticket">
             <i class="fa-solid fa-download mr-2"></i>Download Ticket
           </button>
-          <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+          <!-- 分享功能（明确分享内容） -->
+          <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center" id="share-booking">
             <i class="fa-solid fa-share-alt mr-2"></i>Share Booking
           </button>
         </div>
@@ -205,7 +235,7 @@
     </section>
   </main>
 
-  <!-- 相同的完整页脚 -->
+  <!-- 完整页脚（与其他页面完全一致） -->
   <footer class="bg-neutral-800 text-white py-12">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -282,6 +312,7 @@
     </div>
   </footer>
 
+  <!-- 增强交互的JavaScript -->
   <script>
     // 移动端菜单切换
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -291,9 +322,27 @@
       mobileMenu.classList.toggle('hidden');
     });
     
-    // 返回按钮功能
+    // 返回按钮功能（明确跳转到availability.html）
     document.querySelector('button:has(.fa-arrow-left)').addEventListener('click', () => {
       window.location.href = 'availability.html';
+    });
+    
+    // 下载票据按钮（增加反馈提示）
+    document.getElementById('download-ticket').addEventListener('click', () => {
+      // 模拟下载成功提示
+      const originalText = this.innerHTML;
+      this.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Downloaded!';
+      this.classList.add('bg-success/10', 'text-success', 'border-success/30');
+      
+      setTimeout(() => {
+        this.innerHTML = originalText;
+        this.classList.remove('bg-success/10', 'text-success', 'border-success/30');
+      }, 2000);
+    });
+    
+    // 分享功能（模拟分享提示）
+    document.getElementById('share-booking').addEventListener('click', () => {
+      alert('Booking shared with your contacts! A link to the booking details has been sent.');
     });
   </script>
 </body>
