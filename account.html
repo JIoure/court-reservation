@@ -7,10 +7,36 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
-  <!-- Tailwind & Styles (Consistent) -->
+  <!-- 相同的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            // 其他颜色配置保持不变
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+    }
+  </style>
 </head>
-<body>
-  <!-- Navigation with "Account" active -->
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- 相同的导航栏 -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -33,24 +59,35 @@
         </a>
       </div>
       
-      <!-- Mobile menu -->
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
     </div>
   </nav>
 
-  <!-- Main Content: Account Access -->
+  <!-- 主内容：Account（账户部分） -->
   <main class="flex-grow container mx-auto px-4 py-8">
     <section id="login" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
-      <!-- Same login/registration content as original code -->
-    </section>
-  </main>
-
-  <!-- Footer (Same) -->
-  <footer>
-    <!-- Same footer -->
-  </footer>
-
-  <script>
-    // Mobile menu toggle + account-specific JS
-  </script>
-</body>
-</html>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-user text-primary mr-3"></i>
+          Account Access
+        </h2>
+        <div class="text-neutral-5
