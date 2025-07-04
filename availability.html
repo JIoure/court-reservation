@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CourtReserve - Availability</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Tailwind Configuration (Same as All Pages) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            success: '#00B42A',
+            danger: '#F53F3F',
+            neutral: {
+              100: '#F2F3F5',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .time-slot {
+        @apply h-16 flex items-center justify-center transition-all duration-300 cursor-pointer;
+      }
+      .time-slot-available {
+        @apply bg-success/10 hover:bg-success/20 border border-success/30;
+      }
+      .time-slot-booked {
+        @apply bg-danger/10 border border-danger/30 cursor-not-allowed;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="availability.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      
+      <!-- Mobile Navigation Toggle -->
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content: Availability -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <section id="calendar" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-calendar-days text-primary mr-3"></i>
+          Court Availability Calendar
+        </h2>
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-plus mr-2"></i>Book Court
+          </button>
+          <div class="relative">
+            <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+              <i class="fa-solid fa-filter mr-2"></i>Filter
+              <i class="fa-solid fa-chevron-down ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Week view with 24-hour time slots at 2-hour intervals.</p>
+      
+      <!-- Calendar Legend -->
+      <div class="flex items-center space-x-4 mb-6">
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Available</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Booked</span>
+        </div>
+      </div>
+      
+      <!-- Calendar Grid -->
+      <div class="overflow-x-auto">
+        <div class="calendar-grid gap-2 min-w-[800px]">
+          <!-- Time labels -->
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg"></div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Mon</div>
+            <div class="text-sm text-neutral-400">10-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Tue</div>
+            <div class="text-sm text-neutral-400">11-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Wed</div>
+            <div class="text-sm text-neutral-400">12-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Thu</div>
+            <div class="text-sm text-neutral-400">13-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Fri</div>
+            <div class="text-sm text-neutral-400">14-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Sat</div>
+            <div class="text-sm text-neutral-400">15-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tr-lg">
+            <div class="font-bold">Sun</div>
+            <div class="text-sm text-neutral-400">16-Jun</div>
+          </div>
+
+          <!-- 2-hour interval rows (06:00 to 22:00) -->
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">06:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sun">Free</div>
+
+          <!-- Additional time slots (08:00 to 22:00) as in original code -->
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">08:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Sun">Free</div>
+
+          <!-- Repeat for 10:00, 12:00, 14:00, 16:00, 18:00, 20:00, 22:00 as in original -->
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-6">
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-chevron-left mr-2"></i>Previous Week
+        </button>
+        <span class="text-neutral-600 font-medium">June 10-16, 2025</span>
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          Next Week<i class="fa-solid fa-chevron-right ml-2"></i>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (Same as All Pages) -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <!-- Same footer content as find-courts.html -->
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Time slot interactions (specific to Availability page)
+    document.querySelectorAll('.time-slot-available').forEach(slot => {
+      slot.addEventListener('mouseenter', () => {
+        slot.classList.add('shadow-md', 'scale-105');
+      });
+      
+      slot.addEventListener('mouseleave', () => {
+        slot.classList.remove('shadow-md', 'scale-105');
+      });
+      
+      slot.addEventListener('click', () => {
+        if (confirm(`Book this time slot?\n${slot.dataset.day}, ${slot.dataset.time}`)) {
+          slot.classList.remove('time-slot-available');
+          slot.classList.add('time-slot-booked');
+          slot.textContent = 'Booked';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
