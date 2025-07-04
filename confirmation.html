@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CourtReserve - Booking Confirmation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- 相同的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            success: '#00B42A',
+            danger: '#F53F3F',
+            neutral: {
+              100: '#F2F3F5',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- 相同的导航栏（Availability 激活） -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="availability.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容：Confirmation 确认页面 -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6 md:p-8 transform transition-all duration-500 hover:shadow-md">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-check text-2xl text-success"></i>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-neutral-800 mb-2">Booking Confirmed!</h2>
+        <p class="text-neutral-600">Your court reservation has been successfully processed.</p>
+        <div class="mt-4 inline-block bg-primary/10 text-primary text-sm px-4 py-1 rounded-full">
+          Booking Reference: <span class="font-medium">CR-25689</span>
+        </div>
+      </div>
+      
+      <!-- 预订详情卡片 -->
+      <div class="bg-neutral-50 rounded-xl p-6 mb-8 border border-neutral-200">
+        <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center">
+          <i class="fa-solid fa-calendar-check text-primary mr-2"></i>Booking Details
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Court Location</p>
+              <p class="font-medium text-neutral-800">City Tennis Center</p>
+              <p class="text-sm text-neutral-600">123 Tennis Avenue, Victoria, BC</p>
+            </div>
+            
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Date & Time</p>
+              <p class="font-medium text-neutral-800">Wednesday, June 12, 2025</p>
+              <p class="text-sm text-neutral-600">06:00 PM - 08:00 PM (2 hours)</p>
+            </div>
+            
+            <div>
+              <p class="text-sm text-neutral-500 mb-1">Court Number</p>
+              <p class="font-medium text-neutral-800">Court #5</p>
+            </div>
+          </div>
+          
+          <div>
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Booking For</p>
+              <p class="font-medium text-neutral-800">John Doe</p>
+              <p class="text-sm text-neutral-600">john.doe@example.com • (250) 555-1234</p>
+            </div>
+            
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Guests</p>
+              <p class="font-medium text-neutral-800">3 guests</p>
+            </div>
+            
+            <div>
+              <p class="text-sm text-neutral-500 mb-1">Total Amount</p>
+              <p class="font-bold text-xl text-primary">$50.00</p>
+              <p class="text-xs text-neutral-500">Including all taxes and fees</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 附加信息 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+            <i class="fa-solid fa-clock text-primary"></i>
+          </div>
+          <h4 class="font-bold text-neutral-800 mb-2">Check-in Information</h4>
+          <p class="text-sm text-neutral-600">Please arrive 15 minutes before your scheduled time to check-in at the front desk.</p>
+        </div>
+        
+        <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+            <i class="fa-solid fa-refresh text-primary"></i>
+          </div>
+          <h4 class="font-bold text-neutral-800 mb-2">Cancellation Policy</h4>
+          <p class="text-sm text-neutral-600">Free cancellation up to 24 hours before your booking. No refunds for late cancellations.</p>
+        </div>
+        
+        <div class="bg-white rounded-xl p-5 border border-neutral-200 shadow-sm card-hover">
+          <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+            <i class="fa-solid fa-ticket text-primary"></i>
+          </div>
+          <h4 class="font-bold text-neutral-800 mb-2">Booking Ticket</h4>
+          <p class="text-sm text-neutral-600">A confirmation email with your booking ticket has been sent to your registered email address.</p>
+        </div>
+      </div>
+      
+      <!-- 操作按钮 -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-arrow-left mr-2"></i>Back to Availability
+        </button>
+        
+        <div class="flex gap-4">
+          <button class="px-6 py-3 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-download mr-2"></i>Download Ticket
+          </button>
+          <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-share-alt mr-2"></i>Share Booking
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 相同的完整页脚 -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+            <span class="text-xl font-bold">CourtReserve</span>
+          </div>
+          <p class="text-neutral-400 mb-4">The premier platform for reserving tennis and pickleball courts and connecting with players.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="availability.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Court Availability</a></li>
+            <li><a href="find-courts.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="matchmaking.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Matchmaking</a></li>
+            <li><a href="account.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Sign In / Register</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Support</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact Us</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQ</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Contact Us</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">123 Tennis Street, Court City, CC 12345</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">(123) 456-7890</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">info@courtreserve.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-neutral-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-neutral-500 text-sm">© 2025 CourtReserve. All rights reserved.</p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Terms of Service</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 移动端菜单切换
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 返回按钮功能
+    document.querySelector('button:has(.fa-arrow-left)').addEventListener('click', () => {
+      window.location.href = 'availability.html';
+    });
+  </script>
+</body>
+</html>
