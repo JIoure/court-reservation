@@ -46,9 +46,47 @@
   </style>
 </head>
 <body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
-  <!-- 导航栏（与availability.html一致） -->
+  <!-- 导航栏 -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
-    <!-- 导航栏内容（与原始代码一致，示例略） -->
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+    </div>
   </nav>
 
   <!-- 主内容：确认页面 -->
@@ -59,7 +97,9 @@
           <i class="fa-solid fa-check text-2xl text-success"></i>
         </div>
         <h2 class="text-2xl font-bold text-neutral-800 mb-2">Booking Confirmed!</h2>
+        <p class="text-neutral-500">Your tennis court reservation has been successfully processed.</p>
       </div>
+      
       <!-- 预订详情卡片 -->
       <div class="bg-neutral-50 rounded-xl p-6 mb-8 border border-neutral-200">
         <h3 class="text-xl font-bold text-neutral-800 mb-4 flex items-center">
@@ -69,46 +109,185 @@
           <div>
             <div class="mb-4">
               <p class="text-sm text-neutral-500 mb-1">Date & Time</p>
-              <p class="font-medium text-neutral-800" id="booking-time"></p>
+              <p class="font-medium text-neutral-800" id="booking-time">-</p>
             </div>
             <div class="mb-4">
               <p class="text-sm text-neutral-500 mb-1">Location</p>
-              <p class="font-medium text-neutral-800" id="booking-location"></p>
+              <p class="font-medium text-neutral-800" id="booking-location">-</p>
             </div>
             <div>
               <p class="text-sm text-neutral-500 mb-1">Court Number</p>
-              <p class="font-medium text-neutral-800" id="court-number"></p>
+              <p class="font-medium text-neutral-800" id="court-number">-</p>
             </div>
           </div>
-          <!-- 其他详情（如用户信息、费用，根据需求添加） -->
+          <div>
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Booking Reference</p>
+              <p class="font-medium text-neutral-800" id="booking-reference">-</p>
+            </div>
+            <div class="mb-4">
+              <p class="text-sm text-neutral-500 mb-1">Duration</p>
+              <p class="font-medium text-neutral-800">2 hours</p>
+            </div>
+            <div>
+              <p class="text-sm text-neutral-500 mb-1">Price</p>
+              <p class="font-medium text-neutral-800">$30.00</p>
+            </div>
+          </div>
         </div>
       </div>
-      <!-- 操作按钮（返回、下载等） -->
+      
+      <!-- 操作按钮 -->
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center">
+        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center" onclick="window.location.href='availability.html'">
           <i class="fa-solid fa-arrow-left mr-2"></i>Back to Availability
         </button>
-        <!-- 其他按钮（如下载票据，示例略） -->
+        <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-download mr-2"></i>Download Confirmation
+        </button>
+        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-share-alt mr-2"></i>Share Booking
+        </button>
+      </div>
+    </section>
+    
+    <!-- 推荐内容 -->
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-xl font-bold text-neutral-800 mb-6">Recommended for You</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-tennis-ball text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">Tennis Equipment Rental</h4>
+            <p class="text-neutral-500 text-sm mb-3">Rent high-quality tennis rackets and balls for your game.</p>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              Learn More
+            </button>
+          </div>
+        </div>
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-user-tie text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">Private Tennis Lessons</h4>
+            <p class="text-neutral-500 text-sm mb-3">Book a session with our professional tennis instructors.</p>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              Book Lesson
+            </button>
+          </div>
+        </div>
+        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
+          <div class="h-48 bg-primary/10 flex items-center justify-center">
+            <i class="fa-solid fa-users text-6xl text-primary/50"></i>
+          </div>
+          <div class="p-4">
+            <h4 class="font-semibold text-neutral-800 mb-2">Join a Tennis Tournament</h4>
+            <p class="text-neutral-500 text-sm mb-3">Participate in upcoming local tennis tournaments.</p>
+            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
+              View Tournaments
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <!-- 页脚（与原始代码一致） -->
+  <!-- 页脚 -->
   <footer class="bg-neutral-800 text-white py-12">
-    <!-- 页脚内容（示例略） -->
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+            <span class="text-xl font-bold">CourtReserve</span>
+          </div>
+          <p class="text-neutral-400 mb-4">Find and book tennis courts near you with ease.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Home</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Book Now</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Pricing</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Support</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQs</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">123 Tennis Street, City Center, 10001</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">+1 (555) 123-4567</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">info@courtreserve.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-neutral-700 mt-8 pt-8 text-center text-neutral-400">
+        <p>&copy; 2025 CourtReserve. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 
   <script>
-    // 读取并显示预订信息
-    const bookingInfo = JSON.parse(localStorage.getItem('bookingInfo'));
-    if (bookingInfo) {
-      document.getElementById('booking-time').textContent = `${bookingInfo.day}, ${bookingInfo.time}`;
-      document.getElementById('booking-location').textContent = bookingInfo.location;
-      document.getElementById('court-number').textContent = bookingInfo.court;
-      localStorage.removeItem('bookingInfo');
-    }
+    // 移动端菜单切换
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
 
-    // 移动端菜单切换（原有代码，示例略）
+    // 读取并显示预订信息
+    document.addEventListener('DOMContentLoaded', () => {
+      const bookingInfo = JSON.parse(localStorage.getItem('bookingInfo'));
+      if (bookingInfo) {
+        document.getElementById('booking-time').textContent = `${bookingInfo.day}, ${bookingInfo.time}`;
+        document.getElementById('booking-location').textContent = bookingInfo.location;
+        document.getElementById('court-number').textContent = `Court #${Math.floor(Math.random() * 12) + 1}`;
+        document.getElementById('booking-reference').textContent = generateBookingReference();
+      }
+    });
+
+    // 生成随机预订参考号
+    function generateBookingReference() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
   </script>
 </body>
-</html>
+</html>  
