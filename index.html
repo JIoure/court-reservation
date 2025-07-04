@@ -1,257 +1,918 @@
 <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Socket通信示例</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-            <script>
-                tailwind.config = {
-                    theme: {
-                        extend: {
-                            colors: {
-                                primary: '#3B82F6',
-                                secondary: '#10B981',
-                                dark: '#1E293B',
-                                light: '#F8FAFC'
-                            },
-                            fontFamily: {
-                                inter: ['Inter', 'sans-serif'],
-                            },
-                        }
-                    }
-                }
-            </script>
-            <style type="text/tailwindcss">
-                @layer utilities {
-                    .content-auto {
-                        content-visibility: auto;
-                    }
-                    .socket-card {
-                        @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
-                    }
-                    .btn {
-                        @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2;
-                    }
-                    .btn-primary {
-                        @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary;
-                    }
-                    .btn-secondary {
-                        @apply bg-secondary text-white hover:bg-secondary/90 focus:ring-secondary;
-                    }
-                    .input-field {
-                        @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300;
-                    }
-                    .status-indicator {
-                        @apply inline-block w-3 h-3 rounded-full mr-2;
-                    }
-                    .status-indicator.online {
-                        @apply bg-green-500 animate-pulse;
-                    }
-                    .status-indicator.offline {
-                        @apply bg-red-500;
-                    }
-                }
-            </style>
-        </head>
-        <body class="bg-gray-50 font-inter min-h-screen">
-            <div class="container mx-auto px-4 py-8 max-w-6xl">
-                <header class="mb-12 text-center">
-                    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-dark mb-4">Socket通信演示</h1>
-                    <p class="text-gray-600 text-lg max-w-3xl mx-auto">使用WebSocket技术实现的实时通信示例，展示客户端与服务器之间的数据传输</p>
-                </header>
-
-                <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- 发送端 -->
-                    <div class="socket-card">
-                        <div class="flex items-center mb-4">
-                            <div class="status-indicator offline" id="sender-status"></div>
-                            <h2 class="text-xl font-bold text-dark">消息发送端</h2>
-                        </div>
-                        <div class="mb-4">
-                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">消息内容</label>
-                            <textarea id="message" class="input-field" rows="4" placeholder="输入要发送的消息..."></textarea>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-sm text-gray-500">服务器地址:</span>
-                                <span id="server-address" class="font-medium">ws://localhost:65432</span>
-                            </div>
-                            <button id="send-btn" class="btn btn-primary flex items-center" disabled>
-                                <i class="fa fa-paper-plane mr-2"></i>发送消息
-                            </button>
-                        </div>
-                        <div class="mt-6">
-                            <h3 class="text-sm font-medium text-gray-700 mb-2">发送历史</h3>
-                            <div id="send-history" class="bg-gray-50 rounded-lg p-3 h-40 overflow-y-auto text-sm">
-                                <p class="text-gray-500 italic">等待连接...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 接收端 -->
-                    <div class="socket-card">
-                        <div class="flex items-center mb-4">
-                            <div class="status-indicator offline" id="receiver-status"></div>
-                            <h2 class="text-xl font-bold text-dark">消息接收端</h2>
-                        </div>
-                        <div class="mb-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <label for="port" class="block text-sm font-medium text-gray-700">监听端口</label>
-                                <span class="text-xs text-gray-500">(默认: 65432)</span>
-                            </div>
-                            <input type="number" id="port" class="input-field" value="65432" min="1" max="65535">
-                        </div>
-                        <button id="start-server-btn" class="btn btn-secondary flex items-center w-full justify-center">
-                            <i class="fa fa-play mr-2"></i>启动服务器
-                        </button>
-                        <div class="mt-6">
-                            <h3 class="text-sm font-medium text-gray-700 mb-2">接收历史</h3>
-                            <div id="receive-history" class="bg-gray-50 rounded-lg p-3 h-40 overflow-y-auto text-sm">
-                                <p class="text-gray-500 italic">服务器未启动...</p>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-
-                <footer class="mt-12 text-center text-gray-500 text-sm">
-                    <p>© 2025 Socket通信演示 | 使用WebSocket和Tailwind CSS构建</p>
-                </footer>
-            </div>
-
-            <script>
-                // 全局变量
-                let ws;
-                let server;
-                let receiveHistory = [];
-                let sendHistory = [];
-
-                // DOM元素
-                const senderStatus = document.getElementById('sender-status');
-                const receiverStatus = document.getElementById('receiver-status');
-                const messageInput = document.getElementById('message');
-                const sendBtn = document.getElementById('send-btn');
-                const startServerBtn = document.getElementById('start-server-btn');
-                const portInput = document.getElementById('port');
-                const sendHistoryEl = document.getElementById('send-history');
-                const receiveHistoryEl = document.getElementById('receive-history');
-
-                // 更新发送历史
-                function updateSendHistory(message, status) {
-                    const timestamp = new Date().toLocaleTimeString();
-                    sendHistory.unshift({ message, timestamp, status });
-                    if (sendHistory.length > 10) sendHistory.pop();
-                    
-                    sendHistoryEl.innerHTML = sendHistory.map(item => `
-                        <div class="mb-2 ${item.status ? 'text-green-700' : 'text-red-700'}">
-                            <span class="font-medium">${item.timestamp}</span>: ${item.message}
-                        </div>
-                    `).join('');
-                }
-
-                // 更新接收历史
-                function updateReceiveHistory(message) {
-                    const timestamp = new Date().toLocaleTimeString();
-                    receiveHistory.unshift({ message, timestamp });
-                    if (receiveHistory.length > 10) receiveHistory.pop();
-                    
-                    receiveHistoryEl.innerHTML = receiveHistory.map(item => `
-                        <div class="mb-2 text-blue-700">
-                            <span class="font-medium">${item.timestamp}</span>: ${item.message}
-                        </div>
-                    `).join('');
-                }
-
-                // 连接到WebSocket服务器
-                function connectWebSocket() {
-                    const address = `ws://localhost:${portInput.value}`;
-                    document.getElementById('server-address').textContent = address;
-                    
-                    ws = new WebSocket(address);
-                    
-                    ws.onopen = () => {
-                        senderStatus.classList.remove('offline');
-                        senderStatus.classList.add('online');
-                        sendBtn.disabled = false;
-                        updateSendHistory('已连接到服务器', true);
-                    };
-                    
-                    ws.onmessage = (event) => {
-                        updateReceiveHistory(event.data);
-                    };
-                    
-                    ws.onclose = () => {
-                        senderStatus.classList.remove('online');
-                        senderStatus.classList.add('offline');
-                        sendBtn.disabled = true;
-                        updateSendHistory('与服务器的连接已关闭', false);
-                    };
-                    
-                    ws.onerror = (error) => {
-                        console.error('WebSocket错误:', error);
-                        updateSendHistory('连接服务器失败', false);
-                    };
-                }
-
-                // 发送消息
-                sendBtn.addEventListener('click', () => {
-                    const message = messageInput.value.trim();
-                    if (!message) return;
-                    
-                    if (ws && ws.readyState === WebSocket.OPEN) {
-                        ws.send(message);
-                        updateSendHistory(message, true);
-                        messageInput.value = '';
-                    } else {
-                        updateSendHistory(message, false);
-                    }
-                });
-
-                // 启动服务器
-                startServerBtn.addEventListener('click', () => {
-                    if (server) {
-                        // 关闭服务器
-                        server.close();
-                        server = null;
-                        receiverStatus.classList.remove('online');
-                        receiverStatus.classList.add('offline');
-                        startServerBtn.innerHTML = '<i class="fa fa-play mr-2"></i>启动服务器';
-                        updateReceiveHistory('服务器已停止');
-                        portInput.disabled = false;
-                        
-                        // 如果WebSocket已连接，也关闭它
-                        if (ws && ws.readyState === WebSocket.OPEN) {
-                            ws.close();
-                        }
-                    } else {
-                        // 启动服务器
-                        const port = parseInt(portInput.value, 10);
-                        if (isNaN(port) || port < 1 || port > 65535) {
-                            alert('请输入有效的端口号 (1-65535)');
-                            return;
-                        }
-                        
-                        // 模拟WebSocket服务器
-                        updateReceiveHistory(`服务器正在监听端口 ${port}...`);
-                        receiverStatus.classList.remove('offline');
-                        receiverStatus.classList.add('online');
-                        startServerBtn.innerHTML = '<i class="fa fa-stop mr-2"></i>停止服务器';
-                        portInput.disabled = true;
-                        
-                        // 连接到模拟的WebSocket服务器
-                        connectWebSocket();
-                    }
-                });
-
-                // 回车键发送消息
-                messageInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendBtn.click();
-                    }
-                });
-            </script>
-        </body>
-        </html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tennis Court Reservation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            success: '#00B42A',
+            danger: '#F53F3F',
+            neutral: {
+              100: '#F2F3F5',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+      }
+      .time-slot {
+        @apply h-16 flex items-center justify-center transition-all duration-300 cursor-pointer;
+      }
+      .time-slot-available {
+        @apply bg-success/10 hover:bg-success/20 border border-success/30;
+      }
+      .time-slot-booked {
+        @apply bg-danger/10 border border-danger/30 cursor-not-allowed;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="#calendar" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="#map" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="#matchmaking" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="#login" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      
+      <!-- Mobile Navigation Toggle -->
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
     
+    <!-- Mobile Navigation Menu -->
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="#calendar" class="nav-item nav-item-active">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="#map" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="#matchmaking" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="#login" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <!-- 1. Court Availability Calendar -->
+    <section id="calendar" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-calendar-days text-primary mr-3"></i>
+          Court Availability Calendar
+        </h2>
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-plus mr-2"></i>Book Court
+          </button>
+          <div class="relative">
+            <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+              <i class="fa-solid fa-filter mr-2"></i>Filter
+              <i class="fa-solid fa-chevron-down ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Week view with 24-hour time slots at 2-hour intervals.</p>
+      
+      <!-- Calendar Legend -->
+      <div class="flex items-center space-x-4 mb-6">
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Available</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Booked</span>
+        </div>
+      </div>
+      
+      <!-- Calendar Grid -->
+      <div class="overflow-x-auto">
+        <div class="calendar-grid gap-2 min-w-[800px]">
+          <!-- Time labels -->
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg"></div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Mon</div>
+            <div class="text-sm text-neutral-400">10-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Tue</div>
+            <div class="text-sm text-neutral-400">11-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Wed</div>
+            <div class="text-sm text-neutral-400">12-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Thu</div>
+            <div class="text-sm text-neutral-400">13-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Fri</div>
+            <div class="text-sm text-neutral-400">14-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
+            <div class="font-bold">Sat</div>
+            <div class="text-sm text-neutral-400">15-Jun</div>
+          </div>
+          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tr-lg">
+            <div class="font-bold">Sun</div>
+            <div class="text-sm text-neutral-400">16-Jun</div>
+          </div>
+
+          <!-- 2-hour interval rows (06:00 to 22:00) -->
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">06:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">08:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">10:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">12:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">14:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Sun">Booked</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">16:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Tue">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Sat">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">18:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Wed">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Thu">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Sun">Free</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">20:00</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Mon">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Fri">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Sun">Booked</div>
+
+          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium rounded-bl-lg">22:00</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Mon">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Tue">Free</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Wed">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Thu">Booked</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Fri">Booked</div>
+          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Sat">Free</div>
+          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sun" rounded-br-lg>Booked</div>
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-6">
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-chevron-left mr-2"></i>Previous Week
+        </button>
+        <span class="text-neutral-600 font-medium">June 10-16, 2025</span>
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          Next Week<i class="fa-solid fa-chevron-right ml-2"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Map-Based Finder -->
+    <section id="map" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-map-location-dot text-primary mr-3"></i>
+          Map-Based Court Finder
+        </h2>
+        <div class="flex space-x-2">
+          <div class="relative">
+            <input type="text" placeholder="Search locations..." class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-64">
+            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-primary">
+              <i class="fa-solid fa-search"></i>
+            </button>
+          </div>
+          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-location-crosshairs mr-2"></i>My Location
+          </button>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Interactive map with real-time occupancy pins.</p>
+      
+      <!-- Map Container -->
+      <div class="relative h-[400px] rounded-xl overflow-hidden shadow-md border border-neutral-200">
+        <!-- Map Sketch with Overlay -->
+        <div class="absolute inset-0 bg-neutral-100 flex items-center justify-center">
+          <img src="https://picsum.photos/1200/800" alt="Map background" class="w-full h-full object-cover opacity-80">
+          
+          <!-- Map Overlay with Pins -->
+          <div class="absolute inset-0">
+            <!-- Court Pins -->
+            <div class="absolute top-[30%] left-[25%] group">
+              <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+                <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
+              </div>
+              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <h4 class="font-bold text-neutral-800">City Tennis Center</h4>
+                <p class="text-sm text-neutral-600">12 available courts</p>
+                <div class="flex items-center mt-1">
+                  <div class="h-2 bg-success rounded-full" style="width: 80%"></div>
+                  <span class="ml-2 text-xs text-neutral-500">80% available</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="absolute top-[45%] left-[60%] group">
+              <div class="w-6 h-6 bg-danger rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+                <div class="absolute -top-1 -left-1 w-8 h-8 bg-danger/30 rounded-full animate-ping"></div>
+              </div>
+              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <h4 class="font-bold text-neutral-800">Westside Courts</h4>
+                <p class="text-sm text-neutral-600">2 available courts</p>
+                <div class="flex items-center mt-1">
+                  <div class="h-2 bg-danger rounded-full" style="width: 20%"></div>
+                  <span class="ml-2 text-xs text-neutral-500">20% available</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="absolute top-[65%] left-[40%] group">
+              <div class="w-6 h-6 bg-warning rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+                <div class="absolute -top-1 -left-1 w-8 h-8 bg-warning/30 rounded-full animate-ping"></div>
+              </div>
+              <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <h4 class="font-bold text-neutral-800">Eastview Park Courts</h4>
+                <p class="text-sm text-neutral-600">5 available courts</p>
+                <div class="flex items-center mt-1">
+                  <div class="h-2 bg-warning rounded-full" style="width: 50%"></div>
+                  <span class="ml-2 text-xs text-neutral-500">50% available</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Map Controls -->
+          <div class="absolute bottom-4 right-4 flex flex-col space-y-2">
+            <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+              <i class="fa-solid fa-plus text-neutral-700"></i>
+            </button>
+            <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+              <i class="fa-solid fa-minus text-neutral-700"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Court Listings -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Court Card 1 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=1" alt="City Tennis Center" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">City Tennis Center</h3>
+              <span class="bg-success/10 text-success text-xs px-2 py-1 rounded-full">80% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">12 available courts • 5 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.8 (120 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$25/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Court Card 2 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=2" alt="Westside Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">Westside Courts</h3>
+              <span class="bg-danger/10 text-danger text-xs px-2 py-1 rounded-full">20% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">2 available courts • 12 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.5 (86 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$20/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Court Card 3 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=3" alt="Eastview Park Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">Eastview Park Courts</h3>
+              <span class="bg-warning/10 text-warning text-xs px-2 py-1 rounded-full">50% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">5 available courts • 8 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.6 (102 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$18/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Player Matchmaking Feed -->
+    <section id="matchmaking" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-users text-primary mr-3"></i>
+          Player Matchmaking Feed
+        </h2>
+        <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-plus mr-2"></i>Post Request
+        </button>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Social feed to post and match for games.</p>
+      
+      <!-- Matchmaking Posts -->
+      <div class="space-y-4">
+        <!-- Post 1 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=4" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Alex Johnson</h3>
+                <p class="text-neutral-500 text-sm">Posted 2 hours ago</p>
+              </div>
+            </div>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Tennis</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Partner</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 12, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">18:00 - 20:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Intermediate</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">City Tennis Center</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">I'm looking for a partner to practice some drills and play a friendly match. I'm intermediate level and available on Wednesday evening. Let me know if you're interested!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Post 2 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=5" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Sarah Williams</h3>
+                <p class="text-neutral-500 text-sm">Posted 5 hours ago</p>
+              </div>
+            </div>
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Pickleball</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Partner</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 13, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">12:00 - 14:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Beginner</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">Eastview Park Courts</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">New to pickleball and looking for someone to practice with. I have basic skills but need more experience. Available Thursday afternoon. Let me know if you're interested in playing!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Post 3 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=6" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Michael Chen</h3>
+                <p class="text-neutral-500 text-sm">Posted 1 day ago</p>
+              </div>
+            </div>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Tennis</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Competitive Match</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 15, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">16:00 - 18:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Advanced</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">Westside Courts</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">Looking for an advanced player for a competitive match. I've been playing for 10+ years and looking to test my skills. Saturday afternoon works best for me. Let me know if you're up for it!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Load More Button -->
+      <div class="mt-6 text-center">
+        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center mx-auto">
+          <i class="fa-solid fa-refresh mr-2"></i>Load More Posts
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. Registration & Login Module -->
+    <section id="login" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-user text-primary mr-3"></i>
+          Account Access
+        </h2>
+        <div class="text-neutral-500">
+          Already have an account? <a href="#login" class="text-primary font-medium hover:underline">Sign in</a>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Login Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          <h3 class="text-xl font-bold text-neutral-800 mb-4">Sign In</h3>
+          <p class="text-neutral-500 mb-6">Access your account to manage reservations and preferences.</p>
+          
+          <form>
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-envelope"></i>
+                </span>
+                <input type="email" id="email" class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="you@example.com">
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-1">
+                <label for="password" class="block text-sm font-medium text-neutral-700">Password</label>
+                <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+                <input type="password" id="password" class="w-full pl-10 pr-10 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••">
+                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 hover:text-neutral-600">
+                  <i class="fa-solid fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex items-center">
+                <input type="checkbox" id="remember" class="w-4 h-4 text-primary border-neutral-300 rounded focus:ring-primary">
+                <label for="remember" class="ml-2 block text-sm text-neutral-600">Remember me for 30 days</label>
+              </div>
+            </div>
+            
+            <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 font-medium">
+              Sign In
+            </button>
+          </form>
+          
+          <div class="mt-6 text-center">
+            <p class="text-sm text-neutral-600">Or sign in with:</p>
+            <div class="flex justify-center space-x-4 mt-3">
+              <button class="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors duration-300">
+                <i class="fa-brands fa-google text-neutral-600"></i>
+              </button>
+              <button class="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors duration-300">
+                <i class="fa-brands fa-facebook text-neutral-600"></i>
+              </button>
+              <button class="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center hover:bg-neutral-200 transition-colors duration-300">
+                <i class="fa-brands fa-apple text-neutral-600"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Registration Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+          <h3 class="text-xl font-bold text-neutral-800 mb-4">Create Account</h3>
+          <p class="text-neutral-500 mb-6">Register to reserve courts and connect with other players.</p>
+          
+          <form>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-neutral-700 mb-1">First Name</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                    <i class="fa-solid fa-user"></i>
+                  </span>
+                  <input type="text" id="firstName" class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="John">
+                </div>
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-neutral-700 mb-1">Last Name</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                    <i class="fa-solid fa-user"></i>
+                  </span>
+                  <input type="text" id="lastName" class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Doe">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="regEmail" class="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-envelope"></i>
+                </span>
+                <input type="email" id="regEmail" class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="you@example.com">
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="phone" class="block text-sm font-medium text-neutral-700 mb-1">Phone Number</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-phone"></i>
+                </span>
+                <input type="tel" id="phone" class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="(123) 456-7890">
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="skillLevel" class="block text-sm font-medium text-neutral-700 mb-1">Skill Level</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-star"></i>
+                </span>
+                <select id="skillLevel" class="w-full pl-10 pr-10 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none bg-white">
+                  <option value="" disabled selected>Select your skill level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="professional">Professional</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 pointer-events-none">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </span>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-1">
+                <label for="regPassword" class="block text-sm font-medium text-neutral-700">Password</label>
+                <span class="text-xs text-neutral-500">Must be at least 8 characters</span>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+                <input type="password" id="regPassword" class="w-full pl-10 pr-10 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••">
+                <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-400 hover:text-neutral-600">
+                  <i class="fa-solid fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex items-start">
+                <input type="checkbox" id="terms" class="w-4 h-4 text-primary border-neutral-300 rounded focus:ring-primary mt-1">
+                <label for="terms" class="ml-2 text-sm text-neutral-600">
+                  I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+                </label>
+              </div>
+            </div>
+            
+            <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 font-medium">
+              Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+            <span class="text-xl font-bold">CourtReserve</span>
+          </div>
+          <p class="text-neutral-400 mb-4">The premier platform for reserving tennis and pickleball courts and connecting with players.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#calendar" class="text-neutral-400 hover:text-white transition-colors duration-300">Court Availability</a></li>
+            <li><a href="#map" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="#matchmaking" class="text-neutral-400 hover:text-white transition-colors duration-300">Matchmaking</a></li>
+            <li><a href="#login" class="text-neutral-400 hover:text-white transition-colors duration-300">Sign In / Register</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Support</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact Us</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQ</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Contact Us</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">123 Tennis Street, Court City, CC 12345</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">(123) 456-7890</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">info@courtreserve.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-neutral-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-neutral-500 text-sm">© 2025 CourtReserve. All rights reserved.</p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Terms of Service</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80, // Adjust for header height
+            behavior: 'smooth'
+          });
+          
+          // Close mobile menu if open
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+        }
+      });
+    });
+    
+    // Time slot hover effects
+    document.querySelectorAll('.time-slot-available').forEach(slot => {
+      slot.addEventListener('mouseenter', () => {
+        slot.classList.add('shadow-md', 'scale-105');
+      });
+      
+      slot.addEventListener('mouseleave', () => {
+        slot.classList.remove('shadow-md', 'scale-105');
+      });
+    });
+    
+    // Simulate time slot booking
+    document.querySelectorAll('.time-slot-available').forEach(slot => {
+      slot.addEventListener('click', () => {
+        if (confirm(`Book this time slot?\n${slot.dataset.day}, ${slot.dataset.time}`)) {
+          slot.classList.remove('time-slot-available');
+          slot.classList.add('time-slot-booked');
+          slot.textContent = 'Booked';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
