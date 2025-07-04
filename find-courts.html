@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CourtReserve - Find Courts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Tailwind Configuration (Consistent Across All Pages) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            success: '#00B42A',
+            danger: '#F53F3F',
+            neutral: {
+              100: '#F2F3F5',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .time-slot {
+        @apply h-16 flex items-center justify-center transition-all duration-300 cursor-pointer;
+      }
+      .time-slot-available {
+        @apply bg-success/10 hover:bg-success/20 border border-success/30;
+      }
+      .time-slot-booked {
+        @apply bg-danger/10 border border-danger/30 cursor-not-allowed;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- Navigation (Consistent Across All Pages) -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+      
+      <!-- Mobile Navigation Toggle -->
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content: Find Courts -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <section id="map" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-map-location-dot text-primary mr-3"></i>
+          Map-Based Court Finder
+        </h2>
+        <div class="flex space-x-2">
+          <div class="relative">
+            <input type="text" placeholder="Search locations..." class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-64">
+            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-primary">
+              <i class="fa-solid fa-search"></i>
+            </button>
+          </div>
+          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+            <i class="fa-solid fa-location-crosshairs mr-2"></i>My Location
+          </button>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Interactive map with real-time occupancy pins.</p>
+      
+      <!-- Map Container -->
+      <div class="relative h-[400px] rounded-xl overflow-hidden shadow-md border border-neutral-200">
+        <img src="https://picsum.photos/1200/800" alt="Map background" class="w-full h-full object-cover opacity-80">
+        
+        <!-- Map Overlay with Pins -->
+        <div class="absolute inset-0">
+          <div class="absolute top-[30%] left-[25%] group">
+            <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
+            </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">City Tennis Center</h4>
+              <p class="text-sm text-neutral-600">12 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-success rounded-full" style="width: 80%"></div>
+                <span class="ml-2 text-xs text-neutral-500">80% available</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="absolute top-[45%] left-[60%] group">
+            <div class="w-6 h-6 bg-danger rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-danger/30 rounded-full animate-ping"></div>
+            </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">Westside Courts</h4>
+              <p class="text-sm text-neutral-600">2 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-danger rounded-full" style="width: 20%"></div>
+                <span class="ml-2 text-xs text-neutral-500">20% available</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="absolute top-[65%] left-[40%] group">
+            <div class="w-6 h-6 bg-warning rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+              <div class="absolute -top-1 -left-1 w-8 h-8 bg-warning/30 rounded-full animate-ping"></div>
+            </div>
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <h4 class="font-bold text-neutral-800">Eastview Park Courts</h4>
+              <p class="text-sm text-neutral-600">5 available courts</p>
+              <div class="flex items-center mt-1">
+                <div class="h-2 bg-warning rounded-full" style="width: 50%"></div>
+                <span class="ml-2 text-xs text-neutral-500">50% available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Map Controls -->
+        <div class="absolute bottom-4 right-4 flex flex-col space-y-2">
+          <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+            <i class="fa-solid fa-plus text-neutral-700"></i>
+          </button>
+          <button class="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-neutral-100 transition-colors duration-300">
+            <i class="fa-solid fa-minus text-neutral-700"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Court Listings -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Court Card 1 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=1" alt="City Tennis Center" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">City Tennis Center</h3>
+              <span class="bg-success/10 text-success text-xs px-2 py-1 rounded-full">80% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">12 available courts • 5 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.8 (120 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$25/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Court Card 2 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=2" alt="Westside Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">Westside Courts</h3>
+              <span class="bg-danger/10 text-danger text-xs px-2 py-1 rounded-full">20% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">2 available courts • 12 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.5 (86 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$20/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Court Card 3 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden card-hover">
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/600/400?random=3" alt="Eastview Park Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-lg text-neutral-800">Eastview Park Courts</h3>
+              <span class="bg-warning/10 text-warning text-xs px-2 py-1 rounded-full">50% Available</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-3">5 available courts • 8 mins away</p>
+            <div class="flex items-center text-sm text-neutral-500 mb-3">
+              <i class="fa-solid fa-star text-yellow-400 mr-1"></i>
+              <span>4.6 (102 reviews)</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-primary font-bold">$18/hour</span>
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (Consistent Across All Pages) -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
+            <span class="text-xl font-bold">CourtReserve</span>
+          </div>
+          <p class="text-neutral-400 mb-4">The premier platform for reserving tennis and pickleball courts and connecting with players.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="availability.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Court Availability</a></li>
+            <li><a href="find-courts.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="matchmaking.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Matchmaking</a></li>
+            <li><a href="account.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Sign In / Register</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Support</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact Us</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQ</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Contact Us</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
+              <span class="text-neutral-400">123 Tennis Street, Court City, CC 12345</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-phone text-primary mr-3"></i>
+              <span class="text-neutral-400">(123) 456-7890</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa-solid fa-envelope text-primary mr-3"></i>
+              <span class="text-neutral-400">info@courtreserve.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-neutral-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-neutral-500 text-sm">© 2025 CourtReserve. All rights reserved.</p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Terms of Service</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript (Consistent Across All Pages) -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
