@@ -7,14 +7,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
-  <!-- Tailwind & Styles (Consistent) -->
+  <!-- 相同的 Tailwind 配置 -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             primary: '#165DFF',
-            // Same color config
+            // 其他颜色配置保持不变
           }
         }
       }
@@ -22,11 +22,24 @@
   </script>
   
   <style type="text/tailwindcss">
-    /* Same utilities as other pages */
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .nav-item {
+        @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
+      }
+      .nav-item-active {
+        @apply bg-primary/10 text-primary font-medium;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
   </style>
 </head>
-<body>
-  <!-- Navigation with "Matchmaking" active -->
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+  <!-- 相同的导航栏 -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -49,24 +62,210 @@
         </a>
       </div>
       
-      <!-- Mobile menu (same as others) -->
+      <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
+        <a href="availability.html" class="nav-item">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Availability
+        </a>
+        <a href="find-courts.html" class="nav-item">
+          <i class="fa-solid fa-map-location-dot mr-2"></i>Find Courts
+        </a>
+        <a href="matchmaking.html" class="nav-item nav-item-active">
+          <i class="fa-solid fa-users mr-2"></i>Matchmaking
+        </a>
+        <a href="account.html" class="nav-item">
+          <i class="fa-solid fa-user mr-2"></i>Account
+        </a>
+      </div>
     </div>
   </nav>
 
-  <!-- Main Content: Matchmaking Feed -->
+  <!-- 主内容：Matchmaking（匹配部分） -->
   <main class="flex-grow container mx-auto px-4 py-8">
     <section id="matchmaking" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
-      <!-- Same matchmaking content as original code -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
+          <i class="fa-solid fa-users text-primary mr-3"></i>
+          Player Matchmaking Feed
+        </h2>
+        <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-plus mr-2"></i>Post Request
+        </button>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Social feed to post and match for games.</p>
+      
+      <!-- 匹配帖子列表 -->
+      <div class="space-y-4">
+        <!-- 帖子 1 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=4" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Alex Johnson</h3>
+                <p class="text-neutral-500 text-sm">Posted 2 hours ago</p>
+              </div>
+            </div>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Tennis</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Partner</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 12, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">18:00 - 20:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Intermediate</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">City Tennis Center</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">I'm looking for a partner to practice some drills and play a friendly match. I'm intermediate level and available on Wednesday evening. Let me know if you're interested!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 帖子 2 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=5" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Sarah Williams</h3>
+                <p class="text-neutral-500 text-sm">Posted 5 hours ago</p>
+              </div>
+            </div>
+            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Pickleball</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Partner</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 13, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">12:00 - 14:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Beginner</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">Eastview Park Courts</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">New to pickleball and looking for someone to practice with. I have basic skills but need more experience. Available Thursday afternoon. Let me know if you're interested in playing!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 帖子 3 -->
+        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-5 card-hover">
+          <div class="flex justify-between items-start">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=6" alt="User Avatar" class="w-12 h-12 rounded-full object-cover mr-4">
+              <div>
+                <h3 class="font-bold text-neutral-800">Michael Chen</h3>
+                <p class="text-neutral-500 text-sm">Posted 1 day ago</p>
+              </div>
+            </div>
+            <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Tennis</span>
+          </div>
+          
+          <div class="mt-4">
+            <h4 class="font-bold text-lg text-neutral-800 mb-2">Looking for Competitive Match</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Date</p>
+                <p class="font-medium">June 15, 2025</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Time</p>
+                <p class="font-medium">16:00 - 18:00</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Skill Level</p>
+                <p class="font-medium">Advanced</p>
+              </div>
+              <div class="bg-neutral-50 p-3 rounded-lg">
+                <p class="text-xs text-neutral-500 mb-1">Location</p>
+                <p class="font-medium">Westside Courts</p>
+              </div>
+            </div>
+            
+            <p class="text-neutral-600 mb-4">Looking for an advanced player for a competitive match. I've been playing for 10+ years and looking to test my skills. Saturday afternoon works best for me. Let me know if you're up for it!</p>
+            
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-100 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-comment mr-2"></i>Message
+              </button>
+              <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center">
+                <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Together
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 加载更多按钮 -->
+      <div class="mt-6 text-center">
+        <button class="px-6 py-3 bg-white border border-neutral-300 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-50 transition-all duration-300 flex items-center mx-auto">
+          <i class="fa-solid fa-refresh mr-2"></i>Load More Posts
+        </button>
+      </div>
     </section>
   </main>
 
-  <!-- Footer (Same) -->
-  <footer>
-    <!-- Same footer -->
+  <!-- 相同的页脚 -->
+  <footer class="bg-neutral-800 text-white py-12">
+    <!-- 与其他页面相同的页脚内容 -->
   </footer>
 
   <script>
-    // Mobile menu toggle + matchmaking-specific JS if needed
+    // 移动端菜单切换
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
   </script>
 </body>
 </html>
