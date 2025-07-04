@@ -16,6 +16,7 @@
             primary: '#165DFF',
             secondary: '#36BFFA',
             success: '#00B42A',
+            warning: '#FF7D00',
             danger: '#F53F3F',
             neutral: {
               100: '#F2F3F5',
@@ -124,11 +125,11 @@
       
       <!-- 地图容器（加拿大BC省维多利亚市英文地图） -->
       <div class="relative h-[400px] rounded-xl overflow-hidden shadow-md border border-neutral-200">
-        <!-- 维多利亚市地图（英文标注） -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Victoria_British_Columbia_Map.png/1200px-Victoria_British_Columbia_Map.png" 
-             alt="Victoria, BC Map" 
+        <!-- 维多利亚市地图（使用OpenStreetMap静态地图） -->
+        <img src="https://staticmap.openstreetmap.org/13/48.46/-123.34.png?size=800x400&maptype=mapnik"
+             alt="Victoria, BC Map"
              class="w-full h-full object-cover">
-        
+             
         <!-- 地图标记（维多利亚市的球场位置） -->
         <div class="absolute inset-0">
           <!-- 1. 市中心网球场 -->
@@ -176,7 +177,7 @@
             </div>
           </div>
           
-          <!-- 4.  esquimalt网球场 -->
+          <!-- 4. 埃斯奎莫尔特网球场 -->
           <div class="absolute top-[55%] left-[35%] group">
             <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
