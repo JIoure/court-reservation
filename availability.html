@@ -59,6 +59,41 @@
       .time-slot-selected {
         @apply border-primary bg-primary/10 text-primary font-medium;
       }
+      .duration-option {
+        @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
+      }
+      .duration-option-active {
+        @apply bg-primary text-white;
+      }
+      .calendar-scroll-container {
+        max-height: 500px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .calendar-scroll-container::-webkit-scrollbar {
+        width: 6px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+      }
+      .time-label {
+        @apply bg-neutral-50 text-neutral-600 p-3 text-right font-medium;
+      }
+      .header {
+        @apply bg-neutral-100 text-neutral-500 font-medium p-3 text-center;
+      }
     }
   </style>
 </head>
@@ -117,35 +152,61 @@
           <i class="fa-solid fa-calendar-days text-primary mr-3"></i>
           <span id="current-court-title">Court Availability</span>
         </h2>
-        <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center" id="back-button">
-          <i class="fa-solid fa-arrow-left mr-2"></i>Back to Courts
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center" id="back-button">
+            <i class="fa-solid fa-arrow-left mr-2"></i>Back to Courts
+          </button>
+          <button id="book-selected" class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center opacity-50 cursor-not-allowed" disabled>
+            <i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)
+          </button>
+        </div>
+      </div>
+      
+      <!-- 时间槽时长选择 -->
+      <div class="mb-6 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+        <div class="flex items-center">
+          <span class="text-neutral-600 mr-3 font-medium">Timeslot Duration:</span>
+          <div class="flex space-x-2">
+            <div class="duration-option duration-option-active" data-duration="0.5">0.5 hours</div>
+            <div class="duration-option" data-duration="1">1 hour</div>
+            <div class="duration-option" data-duration="1.5">1.5 hours</div>
+            <div class="duration-option" data-duration="2">2 hours</div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Week view with time slots at <span id="interval-text">0.5-hour</span> intervals.</p>
+      <div class="flex items-center space-x-4 mb-6">
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Available</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div>
+          <span class="text-sm text-neutral-600">Booked</span>
+        </div>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-primary/20 border border-primary/50 mr-2"></div>
+          <span class="text-sm text-neutral-600">Selected</span>
+        </div>
+      </div>
+      
+      <!-- 日历滚动容器 -->
+      <div class="calendar-scroll-container border border-neutral-200 rounded-lg mb-6">
+        <div class="overflow-x-auto">
+          <div id="calendar-grid" class="calendar-grid gap-2 min-w-[800px]">
+            <!-- 日历内容将通过JavaScript动态生成 -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          <i class="fa-solid fa-chevron-left mr-2"></i>Previous Week
         </button>
-      </div>
-      
-      <!-- 日期选择器 -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold mb-4">Select Date</h3>
-        <div class="grid grid-cols-7 gap-2" id="date-selector">
-          <!-- 日期选项将通过JavaScript动态生成 -->
-        </div>
-      </div>
-      
-      <!-- 时间选择器 -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold mb-4">Available Time Slots</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="time-selector">
-          <!-- 时间选项将通过JavaScript动态生成 -->
-        </div>
-      </div>
-      
-      <!-- 预订信息和按钮 -->
-      <div class="border-t border-neutral-200 pt-6 flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-          <p class="text-neutral-600">Selected: <span id="selected-date">No date selected</span> at <span id="selected-time">No time selected</span></p>
-          <p class="text-neutral-500 text-sm">Price: <span id="price-display">$0.00</span></p>
-        </div>
-        <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed" id="reserve-button" disabled>
-          <i class="fa-solid fa-calendar-check mr-2"></i>Reserve This Time
+        <span class="text-neutral-600 font-medium" id="week-display">June 10-16, 2025</span>
+        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
+          Next Week<i class="fa-solid fa-chevron-right ml-2"></i>
         </button>
       </div>
     </section>
@@ -240,7 +301,7 @@
     
     <!-- 用户评论 -->
     <section class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
-      <h3 class="text-xl font-bold text-neutral-700 mb-4">Reviews & Ratings</h3>
+      <h3 class="text-xl font-bold text-neutral-800 mb-6">Reviews & Ratings</h3>
       
       <div class="flex items-center mb-6">
         <div class="flex items-center mr-4">
@@ -407,144 +468,183 @@
         document.title = `CourtReserve - ${selectedCourt} Availability`;
       }
       
-      // 生成日期选择器
-      generateDateSelector();
-      
-      // 生成时间选择器
-      generateTimeSelector();
+      // 初始化日历
+      generateCalendarGrid(currentDuration);
       
       // 生成评论
       generateReviews();
     });
     
-    // 生成日期选择器
-    function generateDateSelector() {
-      const dateSelector = document.getElementById('date-selector');
-      const today = new Date();
+    // 时间槽多选逻辑
+    const selectedSlots = [];
+    const bookButton = document.getElementById('book-selected');
+    let currentDuration = 0.5; // 默认时长
+    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dates = ['10-Jun', '11-Jun', '12-Jun', '13-Jun', '14-Jun', '15-Jun', '16-Jun'];
+    
+    // 生成随机的预订状态
+    function generateRandomBookedStatus() {
+      // 60% 概率可用，40% 概率已预订
+      return Math.random() > 0.6;
+    }
+    
+    // 生成时间标签
+    function generateTimeLabels(duration) {
+      const timeLabels = [];
+      const hoursInDay = 24;
+      const intervals = hoursInDay / duration;
       
-      // 生成未来7天的日期选项
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
+      for (let i = 0; i < intervals; i++) {
+        const hour = Math.floor(i * duration);
+        const minute = (i * duration % 1) * 60;
         
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const dayNumber = date.getDate();
-        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+        // 只生成6:00到24:00之间的时间
+        if (hour < 6) continue;
         
-        const isToday = i === 0;
-        const dateElement = document.createElement('div');
-        dateElement.className = `flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${isToday ? 'bg-primary/10 border-2 border-primary' : 'hover:bg-neutral-100'}`;
-        dateElement.dataset.date = date.toISOString().split('T')[0];
-        
-        const dayNameElement = document.createElement('div');
-        dayNameElement.className = 'font-medium';
-        dayNameElement.textContent = dayName;
-        
-        const dayNumberElement = document.createElement('div');
-        dayNumberElement.className = 'text-xl font-bold';
-        dayNumberElement.textContent = dayNumber;
-        
-        const monthNameElement = document.createElement('div');
-        monthNameElement.className = 'text-sm text-neutral-500';
-        monthNameElement.textContent = monthName;
-        
-        dateElement.appendChild(dayNameElement);
-        dateElement.appendChild(dayNumberElement);
-        dateElement.appendChild(monthNameElement);
-        
-        dateElement.addEventListener('click', () => {
-          // 移除所有日期的选中状态
-          document.querySelectorAll('#date-selector > div').forEach(el => {
-            el.classList.remove('bg-primary/10', 'border-2', 'border-primary');
-            el.classList.add('hover:bg-neutral-100');
-          });
-          
-          // 添加当前日期的选中状态
-          dateElement.classList.remove('hover:bg-neutral-100');
-          dateElement.classList.add('bg-primary/10', 'border-2', 'border-primary');
-          
-          // 更新选中的日期显示
-          document.getElementById('selected-date').textContent = `${dayName}, ${monthName} ${dayNumber}`;
-          
-          // 重新生成时间选择器（实际应用中可能会根据日期加载不同的时间数据）
-          generateTimeSelector();
-          
-          // 重置选中的时间
-          document.getElementById('selected-time').textContent = 'No time selected';
-          document.getElementById('price-display').textContent = '$0.00';
-          document.getElementById('reserve-button').disabled = true;
-        });
-        
-        dateSelector.appendChild(dateElement);
+        const hourStr = hour.toString().padStart(2, '0');
+        const minuteStr = minute.toString().padStart(2, '0');
+        timeLabels.push(`${hourStr}:${minuteStr}`);
       }
       
-      // 默认选择今天
-      if (dateSelector.firstChild) {
-        dateSelector.firstChild.click();
+      return timeLabels;
+    }
+    
+    // 生成日历网格
+    function generateCalendarGrid(duration) {
+      const calendarGrid = document.getElementById('calendar-grid');
+      calendarGrid.innerHTML = '';
+      
+      const timeLabels = generateTimeLabels(duration);
+      
+      // 添加标题行
+      const headerEmpty = document.createElement('div');
+      headerEmpty.className = 'header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg';
+      calendarGrid.appendChild(headerEmpty);
+      
+      daysOfWeek.forEach((day, index) => {
+        const header = document.createElement('div');
+        header.className = `header bg-neutral-100 text-neutral-500 font-medium p-3 text-center ${index === daysOfWeek.length - 1 ? 'rounded-tr-lg' : ''}`;
+        header.innerHTML = `
+          <div class="font-bold">${day}</div>
+          <div class="text-sm text-neutral-400">${dates[index]}</div>
+        `;
+        calendarGrid.appendChild(header);
+      });
+      
+      // 添加时间行
+      timeLabels.forEach(time => {
+        // 时间标签
+        const timeLabel = document.createElement('div');
+        timeLabel.className = 'time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium';
+        timeLabel.textContent = time;
+        calendarGrid.appendChild(timeLabel);
+        
+        // 每天的时间槽
+        daysOfWeek.forEach((day) => {
+          const timeSlot = document.createElement('div');
+          const isBooked = generateRandomBookedStatus();
+          
+          timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'} rounded-md`;
+          timeSlot.dataset.time = time;
+          timeSlot.dataset.day = day;
+          timeSlot.textContent = isBooked ? 'Booked' : 'Free';
+          
+          calendarGrid.appendChild(timeSlot);
+        });
+      });
+      
+      // 重新绑定时间槽点击事件
+      bindTimeSlotEvents();
+    }
+    
+    // 绑定时间槽点击事件
+    function bindTimeSlotEvents() {
+      document.querySelectorAll('.time-slot-available').forEach(slot => {
+        slot.addEventListener('click', () => {
+          // 切换选中状态
+          slot.classList.toggle('time-slot-selected');
+          slot.classList.toggle('time-slot-available');
+          
+          const slotData = {
+            day: slot.dataset.day,
+            time: slot.dataset.time,
+            duration: currentDuration
+          };
+          
+          // 更新选中列表
+          if (slot.classList.contains('time-slot-selected')) {
+            selectedSlots.push(slotData);
+          } else {
+            const index = selectedSlots.findIndex(s => 
+              s.day === slotData.day && s.time === slotData.time && s.duration === slotData.duration
+            );
+            if (index !== -1) {
+              selectedSlots.splice(index, 1);
+            }
+          }
+          
+          // 更新按钮状态
+          updateBookButton();
+        });
+      });
+    }
+    
+    // 时间槽时长选择
+    document.querySelectorAll('.duration-option').forEach(option => {
+      option.addEventListener('click', () => {
+        // 移除所有选项的活跃状态
+        document.querySelectorAll('.duration-option').forEach(opt => {
+          opt.classList.remove('duration-option-active');
+        });
+        
+        // 添加当前选项的活跃状态
+        option.classList.add('duration-option-active');
+        
+        // 更新当前时长
+        currentDuration = parseFloat(option.dataset.duration);
+        
+        // 更新时间标签文本
+        document.getElementById('interval-text').textContent = `${currentDuration}-hour`;
+        
+        // 重置选择的时间槽
+        selectedSlots.length = 0;
+        
+        // 重新生成日历网格
+        generateCalendarGrid(currentDuration);
+        
+        // 更新按钮状态
+        updateBookButton();
+      });
+    });
+    
+    // 更新预订按钮状态
+    function updateBookButton() {
+      if (selectedSlots.length > 0) {
+        bookButton.disabled = false;
+        bookButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (${selectedSlots.length})`;
+      } else {
+        bookButton.disabled = true;
+        bookButton.classList.add('opacity-50', 'cursor-not-allowed');
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)`;
       }
     }
     
-    // 生成时间选择器
-    function generateTimeSelector() {
-      const timeSelector = document.getElementById('time-selector');
-      timeSelector.innerHTML = '';
-      
-      // 生成9:00到21:00的时间选项，每小时一个
-      for (let hour = 9; hour < 21; hour++) {
-        const timeSlot = document.createElement('div');
-        timeSlot.className = 'time-slot time-slot-available';
-        timeSlot.dataset.time = `${hour}:00`;
+    // 预订选中的时间槽 - 跳转到confirmation.html
+    bookButton.addEventListener('click', () => {
+      if (selectedSlots.length > 0) {
+        const selectedCourt = localStorage.getItem('selectedCourt') || 'Unknown Court';
         
-        const timeDisplay = document.createElement('div');
-        timeDisplay.className = 'text-center';
-        timeDisplay.textContent = `${hour}:00 - ${hour + 1}:00`;
+        localStorage.setItem('bookingInfo', JSON.stringify({
+          slots: selectedSlots,
+          location: selectedCourt,
+          court: `Court #${Math.floor(Math.random() * 12) + 1}`
+        }));
         
-        // 随机决定该时间段是否已被预订（实际应用中应该从服务器获取真实数据）
-        const isBooked = Math.random() > 0.7; // 30%的概率已被预订
-        
-        if (isBooked) {
-          timeSlot.className = 'time-slot time-slot-booked';
-        } else {
-          timeSlot.addEventListener('click', () => {
-            // 移除所有时间的选中状态
-            document.querySelectorAll('#time-selector > div').forEach(el => {
-              el.classList.remove('time-slot-selected');
-              if (!el.classList.contains('time-slot-booked')) {
-                el.classList.add('time-slot-available');
-              }
-            });
-            
-            // 添加当前时间的选中状态
-            timeSlot.classList.remove('time-slot-available');
-            timeSlot.classList.add('time-slot-selected');
-            
-            // 更新选中的时间显示
-            document.getElementById('selected-time').textContent = `${hour}:00 - ${hour + 1}:00`;
-            
-            // 更新价格显示（根据时间和日期计算价格）
-            const selectedDate = document.querySelector('#date-selector > div.bg-primary\\/10').dataset.date;
-            const selectedDateObj = new Date(selectedDate);
-            const isWeekend = selectedDateObj.getDay() === 0 || selectedDateObj.getDay() === 6;
-            const isEvening = hour >= 17;
-            
-            let price = 25; // 基础价格
-            if (isWeekend) {
-              price = 38; // 周末价格
-            } else if (isEvening) {
-              price = 35; // 晚上价格
-            }
-            
-            document.getElementById('price-display').textContent = `$${price}.00`;
-            
-            // 启用预订按钮
-            document.getElementById('reserve-button').disabled = false;
-          });
-        }
-        
-        timeSlot.appendChild(timeDisplay);
-        timeSelector.appendChild(timeSlot);
+        // 跳转到确认页面
+        window.location.href = 'confirmation.html';
       }
-    }
+    });
     
     // 生成评论
     function generateReviews() {
@@ -609,29 +709,6 @@
         reviewsContainer.appendChild(reviewElement);
       });
     }
-    
-    // 预订按钮点击事件
-    document.getElementById('reserve-button').addEventListener('click', () => {
-      const selectedCourt = localStorage.getItem('selectedCourt');
-      const selectedDate = document.getElementById('selected-date').textContent;
-      const selectedTime = document.getElementById('selected-time').textContent;
-      const price = document.getElementById('price-display').textContent;
-      
-      // 在实际应用中，这里应该跳转到预订确认页面或提交预订请求到服务器
-      alert(`You have successfully reserved ${selectedCourt} on ${selectedDate} at ${selectedTime} for ${price}.`);
-      
-      // 重置选择状态
-      document.querySelectorAll('#time-selector > div').forEach(el => {
-        el.classList.remove('time-slot-selected');
-        if (!el.classList.contains('time-slot-booked')) {
-          el.classList.add('time-slot-available');
-        }
-      });
-      
-      document.getElementById('selected-time').textContent = 'No time selected';
-      document.getElementById('price-display').textContent = '$0.00';
-      document.getElementById('reserve-button').disabled = true;
-    });
     
     // 平滑滚动
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
