@@ -17,7 +17,7 @@
             secondary: '#36BFFA',
             success: '#00B42A',
             warning: '#FF7D00',
-            danger: '#F53F3F', // 确保危险色为红色
+            danger: '#F53F3F',
             neutral: {
               100: '#F2F3F5',
               200: '#E5E6EB',
@@ -48,16 +48,16 @@
         @apply bg-primary/10 text-primary font-medium;
       }
       .time-slot {
-        @apply p-2 rounded-lg border cursor-pointer transition-all duration-200;
+        @apply p-2 rounded-lg cursor-pointer transition-all duration-200 font-medium;
       }
       .time-slot-available {
-        @apply border-success bg-success/5 hover:bg-success/10;
+        @apply bg-success text-white hover:bg-success/90; /* 实心可用状态 */
       }
       .time-slot-booked {
-        @apply border-danger bg-danger/5 text-danger/70 cursor-not-allowed; /* 已预订状态改为红色系 */
+        @apply bg-neutral-300 text-neutral-600 cursor-not-allowed; /* 实心已预订状态 */
       }
       .time-slot-selected {
-        @apply border-primary bg-primary/10 text-primary font-medium;
+        @apply bg-primary text-white; /* 实心选中状态 */
       }
       .duration-option {
         @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
@@ -179,15 +179,15 @@
       <p class="text-neutral-500 mb-6">Time slots at <span id="interval-text">0.5-hour</span> intervals.</p>
       <div class="flex items-center space-x-4 mb-6">
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
+          <div class="w-4 h-4 rounded-full bg-success mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Available</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div> <!-- 已预订状态指示器改为红色 -->
+          <div class="w-4 h-4 rounded-full bg-neutral-300 mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Booked</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-primary/20 border border-primary/50 mr-2"></div>
+          <div class="w-4 h-4 rounded-full bg-primary mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Selected</span>
         </div>
       </div>
@@ -563,7 +563,7 @@
         const isBooked = generateRandomBookedStatus();
         const endTime = calculateEndTime(time, duration);
         
-        timeSlot.className = `time-slot flex-1 ${isBooked ? 'time-slot-booked' : 'time-slot-available'}`;
+        timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'}`;
         timeSlot.dataset.time = time;
         timeSlot.dataset.endTime = endTime;
         timeSlot.dataset.date = date.toISOString().split('T')[0];
@@ -616,31 +616,27 @@
       return Math.random() > 0.6;
     }
     
-    // 处理时间槽点击
+    // 处理时间槽点击 - 实现多选功能
     function handleTimeSlotClick(timeSlot, date) {
       // 切换选中状态
       if (timeSlot.classList.contains('time-slot-selected')) {
+        // 从选中状态切换为可用状态
         timeSlot.classList.remove('time-slot-selected');
         timeSlot.classList.add('time-slot-available');
         
         // 从选中列表移除
-        const index = selectedSlots.findIndex(s => s.time === timeSlot.dataset.time);
+        const index = selectedSlots.findIndex(s => 
+          s.time === timeSlot.dataset.time && s.date === timeSlot.dataset.date
+        );
         if (index !== -1) {
           selectedSlots.splice(index, 1);
         }
       } else {
-        // 移除其他选中状态
-        document.querySelectorAll('.time-slot-selected').forEach(slot => {
-          slot.classList.remove('time-slot-selected');
-          slot.classList.add('time-slot-available');
-        });
-        
-        // 添加当前选中状态
+        // 从可用状态切换为选中状态
         timeSlot.classList.remove('time-slot-available');
         timeSlot.classList.add('time-slot-selected');
         
         // 添加到选中列表
-        selectedSlots.length = 0;
         selectedSlots.push({
           date: date.toISOString().split('T')[0],
           time: timeSlot.dataset.time,
