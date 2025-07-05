@@ -64,6 +64,25 @@
       .duration-option-active {
         @apply bg-primary text-white;
       }
+      .calendar-scroll-container {
+        max-height: 500px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .calendar-scroll-container::-webkit-scrollbar {
+        width: 6px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+      }
+      .calendar-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+      }
     }
   </style>
 </head>
@@ -132,7 +151,7 @@
         </div>
       </div>
       
-      <!-- 新增：时间槽时长选择 -->
+      <!-- 时间槽时长选择 -->
       <div class="mb-6 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
         <div class="flex items-center">
           <span class="text-neutral-600 mr-3 font-medium">Timeslot Duration:</span>
@@ -145,7 +164,7 @@
         </div>
       </div>
       
-      <p class="text-neutral-500 mb-6">Week view with time slots at selected intervals.</p>
+      <p class="text-neutral-500 mb-6">Week view with time slots at 0.5-hour intervals.</p>
       <div class="flex items-center space-x-4 mb-6">
         <div class="flex items-center">
           <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
@@ -160,122 +179,16 @@
           <span class="text-sm text-neutral-600">Selected</span>
         </div>
       </div>
-      <div class="overflow-x-auto">
-        <div class="calendar-grid gap-2 min-w-[800px]">
-          <!-- 时间标签和日期标题 -->
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg"></div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Mon</div>
-            <div class="text-sm text-neutral-400">10-Jun</div>
+      
+      <!-- 日历滚动容器 -->
+      <div class="calendar-scroll-container border border-neutral-200 rounded-lg">
+        <div class="overflow-x-auto">
+          <div id="calendar-grid" class="calendar-grid gap-2 min-w-[800px]">
+            <!-- 日历内容将通过JavaScript动态生成 -->
           </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Tue</div>
-            <div class="text-sm text-neutral-400">11-Jun</div>
-          </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Wed</div>
-            <div class="text-sm text-neutral-400">12-Jun</div>
-          </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Thu</div>
-            <div class="text-sm text-neutral-400">13-Jun</div>
-          </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Fri</div>
-            <div class="text-sm text-neutral-400">14-Jun</div>
-          </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center">
-            <div class="font-bold">Sat</div>
-            <div class="text-sm text-neutral-400">15-Jun</div>
-          </div>
-          <div class="header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tr-lg">
-            <div class="font-bold">Sun</div>
-            <div class="text-sm text-neutral-400">16-Jun</div>
-          </div>
-          
-          <!-- 时间槽 -->
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">06:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Tue">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Fri">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="06:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="06:00" data-day="Sun">Free</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">08:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Wed">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="08:00" data-day="Fri">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="08:00" data-day="Sun">Booked</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">10:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Mon">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="10:00" data-day="Thu">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Fri">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sat">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="10:00" data-day="Sun">Free</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">12:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Tue">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Fri">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="12:00" data-day="Sat">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="12:00" data-day="Sun">Booked</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">14:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Mon">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Wed">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Fri">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="14:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="14:00" data-day="Sun">Free</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">16:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Thu">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="16:00" data-day="Fri">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Sat">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="16:00" data-day="Sun">Free</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">18:00</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Mon">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Tue">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="18:00" data-day="Fri">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="18:00" data-day="Sun">Booked</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">20:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Mon">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Tue">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Wed">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="20:00" data-day="Thu">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Fri">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sat">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="20:00" data-day="Sun">Free</div>
-          
-          <div class="time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium">22:00</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Mon">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Tue">Booked</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Wed">Free</div>
-          <div class="time-slot time-slot-available rounded-md" data-time="22:00" data-day="Thu">Free</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Fri">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sat">Booked</div>
-          <div class="time-slot time-slot-booked rounded-md" data-time="22:00" data-day="Sun">Booked</div>
         </div>
       </div>
+      
       <div class="flex justify-between items-center mt-6">
         <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
           <i class="fa-solid fa-chevron-left mr-2"></i>Previous Week
@@ -292,8 +205,8 @@
       <h3 class="text-xl font-bold text-neutral-800 mb-6">Recommended Courts</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 bg-primary/10 flex items-center justify-center">
-            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/id/1058/600/400" alt="Tennis court at City Center Tennis Club" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
           </div>
           <div class="p-4">
             <h4 class="font-semibold text-neutral-800 mb-2">City Center Tennis Club</h4>
@@ -317,8 +230,8 @@
           </div>
         </div>
         <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 bg-primary/10 flex items-center justify-center">
-            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/id/1060/600/400" alt="Tennis court at Westside Tennis Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
           </div>
           <div class="p-4">
             <h4 class="font-semibold text-neutral-800 mb-2">Westside Tennis Courts</h4>
@@ -342,8 +255,8 @@
           </div>
         </div>
         <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 bg-primary/10 flex items-center justify-center">
-            <i class="fa-solid fa-map-marker-alt text-6xl text-primary/50"></i>
+          <div class="h-48 overflow-hidden">
+            <img src="https://picsum.photos/id/1059/600/400" alt="Tennis court at Eastview Tennis Complex" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
           </div>
           <div class="p-4">
             <h4 class="font-semibold text-neutral-800 mb-2">Eastview Tennis Complex</h4>
@@ -447,6 +360,115 @@
     const selectedSlots = [];
     const bookButton = document.getElementById('book-selected');
     let currentDuration = 0.5; // 默认时长
+    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dates = ['10-Jun', '11-Jun', '12-Jun', '13-Jun', '14-Jun', '15-Jun', '16-Jun'];
+    
+    // 生成随机的预订状态
+    function generateRandomBookedStatus() {
+      // 60% 概率可用，40% 概率已预订
+      return Math.random() > 0.6;
+    }
+    
+    // 生成时间标签
+    function generateTimeLabels(duration) {
+      const timeLabels = [];
+      const hoursInDay = 24;
+      const intervals = hoursInDay / duration;
+      
+      for (let i = 0; i < intervals; i++) {
+        const hour = Math.floor(i * duration);
+        const minute = (i * duration % 1) * 60;
+        
+        // 只生成6:00到24:00之间的时间
+        if (hour < 6) continue;
+        
+        const hourStr = hour.toString().padStart(2, '0');
+        const minuteStr = minute.toString().padStart(2, '0');
+        timeLabels.push(`${hourStr}:${minuteStr}`);
+      }
+      
+      return timeLabels;
+    }
+    
+    // 生成日历网格
+    function generateCalendarGrid(duration) {
+      const calendarGrid = document.getElementById('calendar-grid');
+      calendarGrid.innerHTML = '';
+      
+      const timeLabels = generateTimeLabels(duration);
+      
+      // 添加标题行
+      const headerEmpty = document.createElement('div');
+      headerEmpty.className = 'header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg';
+      calendarGrid.appendChild(headerEmpty);
+      
+      daysOfWeek.forEach((day, index) => {
+        const header = document.createElement('div');
+        header.className = `header bg-neutral-100 text-neutral-500 font-medium p-3 text-center ${index === daysOfWeek.length - 1 ? 'rounded-tr-lg' : ''}`;
+        header.innerHTML = `
+          <div class="font-bold">${day}</div>
+          <div class="text-sm text-neutral-400">${dates[index]}</div>
+        `;
+        calendarGrid.appendChild(header);
+      });
+      
+      // 添加时间行
+      timeLabels.forEach(time => {
+        // 时间标签
+        const timeLabel = document.createElement('div');
+        timeLabel.className = 'time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium';
+        timeLabel.textContent = time;
+        calendarGrid.appendChild(timeLabel);
+        
+        // 每天的时间槽
+        daysOfWeek.forEach((day, index) => {
+          const timeSlot = document.createElement('div');
+          const isBooked = generateRandomBookedStatus();
+          
+          timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'} rounded-md`;
+          timeSlot.dataset.time = time;
+          timeSlot.dataset.day = day;
+          timeSlot.textContent = isBooked ? 'Booked' : 'Free';
+          
+          calendarGrid.appendChild(timeSlot);
+        });
+      });
+      
+      // 重新绑定时间槽点击事件
+      bindTimeSlotEvents();
+    }
+    
+    // 绑定时间槽点击事件
+    function bindTimeSlotEvents() {
+      document.querySelectorAll('.time-slot-available').forEach(slot => {
+        slot.addEventListener('click', () => {
+          // 切换选中状态
+          slot.classList.toggle('time-slot-selected');
+          slot.classList.toggle('time-slot-available');
+          
+          const slotData = {
+            day: slot.dataset.day,
+            time: slot.dataset.time,
+            duration: currentDuration
+          };
+          
+          // 更新选中列表
+          if (slot.classList.contains('time-slot-selected')) {
+            selectedSlots.push(slotData);
+          } else {
+            const index = selectedSlots.findIndex(s => 
+              s.day === slotData.day && s.time === slotData.time && s.duration === slotData.duration
+            );
+            if (index !== -1) {
+              selectedSlots.splice(index, 1);
+            }
+          }
+          
+          // 更新按钮状态
+          updateBookButton();
+        });
+      });
+    }
     
     // 时间槽时长选择
     document.querySelectorAll('.duration-option').forEach(option => {
@@ -468,39 +490,9 @@
           
         // 重置选择的时间槽
         selectedSlots.length = 0;
-        document.querySelectorAll('.time-slot-selected').forEach(slot => {
-          slot.classList.remove('time-slot-selected');
-          slot.classList.add('time-slot-available');
-        });
         
-        // 更新按钮状态
-        updateBookButton();
-      });
-    });
-    
-    document.querySelectorAll('.time-slot-available').forEach(slot => {
-      slot.addEventListener('click', () => {
-        // 切换选中状态
-        slot.classList.toggle('time-slot-selected');
-        slot.classList.toggle('time-slot-available');
-        
-        const slotData = {
-          day: slot.dataset.day,
-          time: slot.dataset.time,
-          duration: currentDuration
-        };
-        
-        // 更新选中列表
-        if (slot.classList.contains('time-slot-selected')) {
-          selectedSlots.push(slotData);
-        } else {
-          const index = selectedSlots.findIndex(s => 
-            s.day === slotData.day && s.time === slotData.time && s.duration === slotData.duration
-          );
-          if (index !== -1) {
-            selectedSlots.splice(index, 1);
-          }
-        }
+        // 重新生成日历网格
+        generateCalendarGrid(currentDuration);
         
         // 更新按钮状态
         updateBookButton();
@@ -531,6 +523,9 @@
         window.location.href = 'confirmation.html';
       }
     });
+    
+    // 初始生成日历
+    generateCalendarGrid(currentDuration);
   </script>
 </body>
 </html>
