@@ -50,6 +50,9 @@
       .card-hover {
         @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
       }
+      .map-pin {
+        @apply cursor-pointer transition-transform duration-300 hover:scale-125;
+      }
     }
   </style>
 </head>
@@ -125,7 +128,7 @@
       
       <!-- 地图容器（加拿大BC省维多利亚市英文地图） -->
       <div class="relative h-[400px] rounded-xl overflow-hidden shadow-md border border-neutral-200">
-        <!-- 维多利亚市地图（使用本地图片） -->
+        <!-- 维多利亚市地图 -->
         <img src="victoria-map.png" 
              alt="Victoria, BC Map" 
              class="w-full h-full object-cover">
@@ -134,7 +137,7 @@
         <div class="absolute inset-0">
           <!-- 1. 市中心网球场 -->
           <div class="absolute top-[45%] left-[50%] group">
-            <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-primary rounded-full shadow-lg map-pin" data-court="Victoria City Courts">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -149,7 +152,7 @@
           
           <!-- 2. 橡树湾网球场 -->
           <div class="absolute top-[30%] left-[40%] group">
-            <div class="w-6 h-6 bg-warning rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-warning rounded-full shadow-lg map-pin" data-court="Oak Bay Tennis Club">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-warning/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -164,7 +167,7 @@
           
           <!-- 3. 萨尼奇半岛球场 -->
           <div class="absolute top-[25%] left-[65%] group">
-            <div class="w-6 h-6 bg-danger rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-danger rounded-full shadow-lg map-pin" data-court="Saanich Peninsula Courts">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-danger/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -179,7 +182,7 @@
           
           <!-- 4. 埃斯奎莫尔特网球场 -->
           <div class="absolute top-[55%] left-[35%] group">
-            <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-primary rounded-full shadow-lg map-pin" data-court="Esquimalt Tennis Courts">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -192,9 +195,9 @@
             </div>
           </div>
           
-          <!-- 5. 新添加的球场：UVic 大学球场 -->
+          <!-- 5. UVic 大学球场 -->
           <div class="absolute top-[40%] left-[70%] group">
-            <div class="w-6 h-6 bg-secondary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-secondary rounded-full shadow-lg map-pin" data-court="UVic Tennis Complex">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-secondary/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -207,9 +210,9 @@
             </div>
           </div>
           
-          <!-- 6. 新添加的球场：戈登头部球场 -->
+          <!-- 6. 戈登头部球场 -->
           <div class="absolute top-[65%] left-[60%] group">
-            <div class="w-6 h-6 bg-primary rounded-full shadow-lg transform transition-transform duration-300 group-hover:scale-125 cursor-pointer">
+            <div class="w-6 h-6 bg-primary rounded-full shadow-lg map-pin" data-court="Gordon Head Courts">
               <div class="absolute -top-1 -left-1 w-8 h-8 bg-primary/30 rounded-full animate-ping"></div>
             </div>
             <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-3 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -253,7 +256,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$28/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="Victoria City Courts">
                 View Details
               </button>
             </div>
@@ -277,7 +280,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$32/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="Oak Bay Tennis Club">
                 View Details
               </button>
             </div>
@@ -301,7 +304,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$22/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="Saanich Peninsula Courts">
                 View Details
               </button>
             </div>
@@ -325,7 +328,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$25/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="UVic Tennis Complex">
                 View Details
               </button>
             </div>
@@ -349,7 +352,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$27/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="Gordon Head Courts">
                 View Details
               </button>
             </div>
@@ -373,7 +376,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-primary font-bold">$30/hour</span>
-              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300">
+              <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 view-details" data-court="Esquimalt Tennis Courts">
                 View Details
               </button>
             </div>
@@ -383,7 +386,7 @@
     </section>
   </main>
 
-  <!-- 完整页脚（包含所有子选项） -->
+  <!-- 完整页脚 -->
   <footer class="bg-neutral-800 text-white py-12">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -467,6 +470,28 @@
     
     mobileMenuButton.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 地图标记点击事件 - 跳转到availability.html并传递球场名称
+    document.querySelectorAll('.map-pin').forEach(pin => {
+      pin.addEventListener('click', () => {
+        const courtName = pin.getAttribute('data-court');
+        // 将选中的球场名称存储在localStorage中
+        localStorage.setItem('selectedCourt', courtName);
+        // 跳转到availability.html
+        window.location.href = 'availability.html';
+      });
+    });
+    
+    // 球场卡片按钮点击事件 - 跳转到availability.html并传递球场名称
+    document.querySelectorAll('.view-details').forEach(button => {
+      button.addEventListener('click', () => {
+        const courtName = button.getAttribute('data-court');
+        // 将选中的球场名称存储在localStorage中
+        localStorage.setItem('selectedCourt', courtName);
+        // 跳转到availability.html
+        window.location.href = 'availability.html';
+      });
     });
     
     // 平滑滚动
