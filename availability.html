@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CourtReserve - Availability</title>
+  <title>CourtReserve - Court Availability</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
+  <!-- Tailwind 配置 -->
   <script>
     tailwind.config = {
       theme: {
@@ -15,6 +16,7 @@
             primary: '#165DFF',
             secondary: '#36BFFA',
             success: '#00B42A',
+            warning: '#FF7D00',
             danger: '#F53F3F',
             neutral: {
               100: '#F2F3F5',
@@ -36,21 +38,8 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      .calendar-grid {
-        display: grid;
-        grid-template-columns: 80px repeat(7, 1fr);
-      }
-      .time-slot {
-        @apply h-16 flex items-center justify-center transition-all duration-300 cursor-pointer;
-      }
-      .time-slot-available {
-        @apply bg-success/10 hover:bg-success/20 border border-success/30;
-      }
-      .time-slot-booked {
-        @apply bg-danger/10 border border-danger/30 cursor-not-allowed;
-      }
-      .time-slot-selected {
-        @apply bg-primary/20 border border-primary/50;
+      .content-auto {
+        content-visibility: auto;
       }
       .nav-item {
         @apply px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10;
@@ -58,30 +47,17 @@
       .nav-item-active {
         @apply bg-primary/10 text-primary font-medium;
       }
-      .duration-option {
-        @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
+      .time-slot {
+        @apply p-2 rounded-lg border cursor-pointer transition-all duration-200;
       }
-      .duration-option-active {
-        @apply bg-primary text-white;
+      .time-slot-available {
+        @apply border-success bg-success/5 hover:bg-success/10;
       }
-      .calendar-scroll-container {
-        max-height: 500px;
-        overflow-y: auto;
-        scrollbar-width: thin;
+      .time-slot-booked {
+        @apply border-neutral-300 bg-neutral-100 text-neutral-400 cursor-not-allowed;
       }
-      .calendar-scroll-container::-webkit-scrollbar {
-        width: 6px;
-      }
-      .calendar-scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-      }
-      .calendar-scroll-container::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 10px;
-      }
-      .calendar-scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #a1a1a1;
+      .time-slot-selected {
+        @apply border-primary bg-primary/10 text-primary font-medium;
       }
     }
   </style>
@@ -94,6 +70,7 @@
         <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
         <span class="text-xl font-bold text-neutral-700">CourtReserve</span>
       </div>
+      
       <div class="hidden md:flex items-center space-x-1">
         <a href="availability.html" class="nav-item nav-item-active">
           <i class="fa-solid fa-calendar-days mr-2"></i>Availability
@@ -108,10 +85,12 @@
           <i class="fa-solid fa-user mr-2"></i>Account
         </a>
       </div>
+      
       <button class="md:hidden text-neutral-700 focus:outline-none" id="mobile-menu-button">
         <i class="fa-solid fa-bars text-xl"></i>
       </button>
     </div>
+    
     <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
       <div class="container mx-auto px-4 py-2 flex flex-col space-y-1">
         <a href="availability.html" class="nav-item nav-item-active">
@@ -130,160 +109,206 @@
     </div>
   </nav>
 
-  <!-- 主内容：日历 -->
+  <!-- 主内容：Court Availability -->
   <main class="flex-grow container mx-auto px-4 py-8">
-    <section id="calendar" class="mb-12 bg-white rounded-xl shadow-sm p-6">
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-neutral-700 flex items-center">
           <i class="fa-solid fa-calendar-days text-primary mr-3"></i>
-          Court Availability
+          <span id="current-court-title">Court Availability</span>
         </h2>
-        <div class="flex space-x-2">
-          <button id="book-selected" class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center opacity-50 cursor-not-allowed" disabled>
-            <i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)
-          </button>
-          <div class="relative">
-            <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
-              <i class="fa-solid fa-filter mr-2"></i>Filter
-              <i class="fa-solid fa-chevron-down ml-2"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 时间槽时长选择 -->
-      <div class="mb-6 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
-        <div class="flex items-center">
-          <span class="text-neutral-600 mr-3 font-medium">Timeslot Duration:</span>
-          <div class="flex space-x-2">
-            <div class="duration-option duration-option-active" data-duration="0.5">0.5 hours</div>
-            <div class="duration-option" data-duration="1">1 hour</div>
-            <div class="duration-option" data-duration="1.5">1.5 hours</div>
-            <div class="duration-option" data-duration="2">2 hours</div>
-          </div>
-        </div>
-      </div>
-      
-      <p class="text-neutral-500 mb-6">Week view with time slots at 0.5-hour intervals.</p>
-      <div class="flex items-center space-x-4 mb-6">
-        <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
-          <span class="text-sm text-neutral-600">Available</span>
-        </div>
-        <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-danger/10 border border-danger/30 mr-2"></div>
-          <span class="text-sm text-neutral-600">Booked</span>
-        </div>
-        <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-primary/20 border border-primary/50 mr-2"></div>
-          <span class="text-sm text-neutral-600">Selected</span>
-        </div>
-      </div>
-      
-      <!-- 日历滚动容器 -->
-      <div class="calendar-scroll-container border border-neutral-200 rounded-lg">
-        <div class="overflow-x-auto">
-          <div id="calendar-grid" class="calendar-grid gap-2 min-w-[800px]">
-            <!-- 日历内容将通过JavaScript动态生成 -->
-          </div>
-        </div>
-      </div>
-      
-      <div class="flex justify-between items-center mt-6">
-        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
-          <i class="fa-solid fa-chevron-left mr-2"></i>Previous Week
+        <button class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center" id="back-button">
+          <i class="fa-solid fa-arrow-left mr-2"></i>Back to Courts
         </button>
-        <span class="text-neutral-600 font-medium">June 10-16, 2025</span>
-        <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
-          Next Week<i class="fa-solid fa-chevron-right ml-2"></i>
+      </div>
+      
+      <!-- 日期选择器 -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4">Select Date</h3>
+        <div class="grid grid-cols-7 gap-2" id="date-selector">
+          <!-- 日期选项将通过JavaScript动态生成 -->
+        </div>
+      </div>
+      
+      <!-- 时间选择器 -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4">Available Time Slots</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="time-selector">
+          <!-- 时间选项将通过JavaScript动态生成 -->
+        </div>
+      </div>
+      
+      <!-- 预订信息和按钮 -->
+      <div class="border-t border-neutral-200 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <p class="text-neutral-600">Selected: <span id="selected-date">No date selected</span> at <span id="selected-time">No time selected</span></p>
+          <p class="text-neutral-500 text-sm">Price: <span id="price-display">$0.00</span></p>
+        </div>
+        <button class="px-6 py-3 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed" id="reserve-button" disabled>
+          <i class="fa-solid fa-calendar-check mr-2"></i>Reserve This Time
         </button>
       </div>
     </section>
     
-    <!-- 推荐内容 -->
-    <section class="mb-12 bg-white rounded-xl shadow-sm p-6">
-      <h3 class="text-xl font-bold text-neutral-800 mb-6">Recommended Courts</h3>
+    <!-- 球场详情 -->
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <h3 class="text-xl font-bold text-neutral-700 mb-4">Court Details</h3>
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 overflow-hidden">
-            <img src="https://picsum.photos/id/1058/600/400" alt="Tennis court at City Center Tennis Club" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+        <div class="md:col-span-2">
+          <div class="h-64 md:h-80 rounded-lg overflow-hidden mb-4">
+            <img src="https://picsum.photos/800/400?random=20" alt="Selected Tennis Court" class="w-full h-full object-cover">
           </div>
-          <div class="p-4">
-            <h4 class="font-semibold text-neutral-800 mb-2">City Center Tennis Club</h4>
-            <div class="flex items-center mb-2">
-              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
-              <span class="text-sm text-neutral-600">Downtown, 10001</span>
+          
+          <h4 class="font-bold text-lg mb-2">About This Court</h4>
+          <p class="text-neutral-600 mb-4">
+            This premier tennis court features a high-quality synthetic surface that provides excellent ball bounce and traction. 
+            The court is well-maintained with professional lighting for evening play and is surrounded by comfortable viewing areas.
+          </p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="flex items-center">
+              <i class="fa-solid fa-shower text-primary mr-3"></i>
+              <span class="text-neutral-600">Restrooms & Showers Available</span>
             </div>
-            <div class="flex items-center mb-3">
-              <div class="flex">
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
-              </div>
-              <span class="text-sm text-neutral-500 ml-2">4.5 (128 reviews)</span>
+            <div class="flex items-center">
+              <i class="fa-solid fa-bottle-water text-primary mr-3"></i>
+              <span class="text-neutral-600">Water Fountain</span>
             </div>
-            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
-              View Courts
-            </button>
-          </div>
-        </div>
-        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 overflow-hidden">
-            <img src="https://picsum.photos/id/1060/600/400" alt="Tennis court at Westside Tennis Courts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
-          </div>
-          <div class="p-4">
-            <h4 class="font-semibold text-neutral-800 mb-2">Westside Tennis Courts</h4>
-            <div class="flex items-center mb-2">
-              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
-              <span class="text-sm text-neutral-600">Westside, 10002</span>
+            <div class="flex items-center">
+              <i class="fa-solid fa-lockers text-primary mr-3"></i>
+              <span class="text-neutral-600">Lockers Available</span>
             </div>
-            <div class="flex items-center mb-3">
-              <div class="flex">
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-neutral-300"></i>
-              </div>
-              <span class="text-sm text-neutral-500 ml-2">4.0 (95 reviews)</span>
+            <div class="flex items-center">
+              <i class="fa-solid fa-store text-primary mr-3"></i>
+              <span class="text-neutral-600">Pro Shop Nearby</span>
             </div>
-            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
-              View Courts
-            </button>
           </div>
         </div>
-        <div class="bg-neutral-50 rounded-lg overflow-hidden border border-neutral-200 hover:shadow-md transition-all duration-300">
-          <div class="h-48 overflow-hidden">
-            <img src="https://picsum.photos/id/1059/600/400" alt="Tennis court at Eastview Tennis Complex" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+        
+        <div class="bg-neutral-50 rounded-lg p-5">
+          <h4 class="font-bold text-lg mb-3">Court Information</h4>
+          
+          <div class="space-y-3 mb-4">
+            <div class="flex justify-between">
+              <span class="text-neutral-600">Surface Type:</span>
+              <span class="font-medium">Synthetic</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-neutral-600">Lighting:</span>
+              <span class="font-medium">Available (Night Play)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-neutral-600">Number of Courts:</span>
+              <span class="font-medium">8</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-neutral-600">Accessibility:</span>
+              <span class="font-medium">Wheelchair Accessible</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-neutral-600">Booking Policy:</span>
+              <span class="font-medium">Up to 7 days in advance</span>
+            </div>
           </div>
-          <div class="p-4">
-            <h4 class="font-semibold text-neutral-800 mb-2">Eastview Tennis Complex</h4>
-            <div class="flex items-center mb-2">
-              <i class="fa-solid fa-location-dot text-neutral-500 mr-2"></i>
-              <span class="text-sm text-neutral-600">Eastview, 10003</span>
-            </div>
-            <div class="flex items-center mb-3">
-              <div class="flex">
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
-                <i class="fa-solid fa-star text-yellow-400"></i>
+          
+          <div class="border-t border-neutral-200 pt-4">
+            <h4 class="font-bold text-lg mb-3">Pricing Information</h4>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between">
+                <span class="text-neutral-600">Weekday (9am-5pm):</span>
+                <span class="font-medium">$25/hour</span>
               </div>
-              <span class="text-sm text-neutral-500 ml-2">5.0 (73 reviews)</span>
+              <div class="flex justify-between">
+                <span class="text-neutral-600">Weekday (5pm-10pm):</span>
+                <span class="font-medium">$35/hour</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-neutral-600">Weekend (All Day):</span>
+                <span class="font-medium">$38/hour</span>
+              </div>
             </div>
-            <button class="w-full py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-all duration-300">
-              View Courts
-            </button>
+            
+            <p class="text-sm text-neutral-500 mb-0">
+              All prices include taxes. Court reservations can be canceled up to 24 hours in advance for a full refund.
+            </p>
           </div>
         </div>
       </div>
     </section>
+    
+    <!-- 用户评论 -->
+    <section class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
+      <h3 class="text-xl font-bold text-neutral-700 mb-4">Reviews & Ratings</h3>
+      
+      <div class="flex items-center mb-6">
+        <div class="flex items-center mr-4">
+          <div class="text-3xl font-bold text-neutral-800">4.9</div>
+          <div class="ml-2">
+            <div class="flex">
+              <i class="fa-solid fa-star text-yellow-400"></i>
+              <i class="fa-solid fa-star text-yellow-400"></i>
+              <i class="fa-solid fa-star text-yellow-400"></i>
+              <i class="fa-solid fa-star text-yellow-400"></i>
+              <i class="fa-solid fa-star text-yellow-400"></i>
+            </div>
+            <div class="text-sm text-neutral-500">Based on 156 reviews</div>
+          </div>
+        </div>
+        
+        <div class="w-full max-w-xs">
+          <div class="flex items-center mb-1">
+            <div class="w-12 text-sm text-neutral-600">5 stars</div>
+            <div class="flex-1 h-2 bg-neutral-200 rounded-full mx-2">
+              <div class="h-2 bg-yellow-400 rounded-full" style="width: 92%"></div>
+            </div>
+            <div class="w-8 text-sm text-neutral-600 text-right">92%</div>
+          </div>
+          <div class="flex items-center mb-1">
+            <div class="w-12 text-sm text-neutral-600">4 stars</div>
+            <div class="flex-1 h-2 bg-neutral-200 rounded-full mx-2">
+              <div class="h-2 bg-yellow-400 rounded-full" style="width: 6%"></div>
+            </div>
+            <div class="w-8 text-sm text-neutral-600 text-right">6%</div>
+          </div>
+          <div class="flex items-center mb-1">
+            <div class="w-12 text-sm text-neutral-600">3 stars</div>
+            <div class="flex-1 h-2 bg-neutral-200 rounded-full mx-2">
+              <div class="h-2 bg-yellow-400 rounded-full" style="width: 2%"></div>
+            </div>
+            <div class="w-8 text-sm text-neutral-600 text-right">2%</div>
+          </div>
+          <div class="flex items-center mb-1">
+            <div class="w-12 text-sm text-neutral-600">2 stars</div>
+            <div class="flex-1 h-2 bg-neutral-200 rounded-full mx-2">
+              <div class="h-2 bg-yellow-400 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="w-8 text-sm text-neutral-600 text-right">0%</div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-12 text-sm text-neutral-600">1 star</div>
+            <div class="flex-1 h-2 bg-neutral-200 rounded-full mx-2">
+              <div class="h-2 bg-yellow-400 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="w-8 text-sm text-neutral-600 text-right">0%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="space-y-6" id="reviews-container">
+        <!-- 评论将通过JavaScript动态生成 -->
+      </div>
+      
+      <div class="mt-8 text-center">
+        <button class="px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-all duration-300">
+          Load More Reviews
+        </button>
+      </div>
+    </section>
   </main>
 
-  <!-- 页脚 -->
+  <!-- 完整页脚 -->
   <footer class="bg-neutral-800 text-white py-12">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -292,58 +317,70 @@
             <i class="fa-solid fa-table-tennis-paddle-ball text-primary text-2xl"></i>
             <span class="text-xl font-bold">CourtReserve</span>
           </div>
-          <p class="text-neutral-400 mb-4">Find and book tennis courts near you with ease.</p>
+          <p class="text-neutral-400 mb-4">The premier platform for reserving tennis and pickleball courts and connecting with players in Victoria, BC.</p>
           <div class="flex space-x-4">
-            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
               <i class="fa-brands fa-facebook"></i>
             </a>
-            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
               <i class="fa-brands fa-twitter"></i>
             </a>
-            <a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
               <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
+              <i class="fa-brands fa-linkedin"></i>
             </a>
           </div>
         </div>
+        
         <div>
-          <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Home</a></li>
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Book Now</a></li>
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Pricing</a></li>
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact</a></li>
+            <li><a href="availability.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Court Availability</a></li>
+            <li><a href="find-courts.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Find Courts</a></li>
+            <li><a href="matchmaking.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Matchmaking</a></li>
+            <li><a href="account.html" class="text-neutral-400 hover:text-white transition-colors duration-300">Sign In / Register</a></li>
           </ul>
         </div>
+        
         <div>
-          <h3 class="text-lg font-semibold mb-4">Support</h3>
+          <h4 class="text-lg font-bold mb-4">Support</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQs</a></li>
             <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Help Center</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Contact Us</a></li>
+            <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">FAQ</a></li>
             <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Privacy Policy</a></li>
             <li><a href="#" class="text-neutral-400 hover:text-white transition-colors duration-300">Terms of Service</a></li>
           </ul>
         </div>
+        
         <div>
-          <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-          <ul class="space-y-2">
+          <h4 class="text-lg font-bold mb-4">Contact Us</h4>
+          <ul class="space-y-3">
             <li class="flex items-start">
               <i class="fa-solid fa-map-marker-alt text-primary mt-1 mr-3"></i>
-              <span class="text-neutral-400">123 Tennis Street, City Center, 10001</span>
+              <span class="text-neutral-400">123 Tennis Court, Victoria, BC V8W 1T7, Canada</span>
             </li>
             <li class="flex items-center">
               <i class="fa-solid fa-phone text-primary mr-3"></i>
-              <span class="text-neutral-400">+1 (555) 123-4567</span>
+              <span class="text-neutral-400">(250) 555-1234</span>
             </li>
             <li class="flex items-center">
               <i class="fa-solid fa-envelope text-primary mr-3"></i>
-              <span class="text-neutral-400">info@courtreserve.com</span>
+              <span class="text-neutral-400">info@courtreserve.ca</span>
             </li>
           </ul>
         </div>
       </div>
-      <div class="border-t border-neutral-700 mt-8 pt-8 text-center text-neutral-400">
-        <p>&copy; 2025 CourtReserve. All rights reserved.</p>
+      
+      <div class="border-t border-neutral-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-neutral-500 text-sm">© 2025 CourtReserve. All rights reserved.</p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Privacy Policy</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Terms of Service</a>
+          <a href="#" class="text-neutral-500 hover:text-white text-sm transition-colors duration-300">Cookie Policy</a>
+        </div>
       </div>
     </div>
   </footer>
@@ -352,180 +389,271 @@
     // 移动端菜单切换
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
+    
     mobileMenuButton.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
-
-    // 时间槽多选逻辑
-    const selectedSlots = [];
-    const bookButton = document.getElementById('book-selected');
-    let currentDuration = 0.5; // 默认时长
-    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const dates = ['10-Jun', '11-Jun', '12-Jun', '13-Jun', '14-Jun', '15-Jun', '16-Jun'];
     
-    // 生成随机的预订状态
-    function generateRandomBookedStatus() {
-      // 60% 概率可用，40% 概率已预订
-      return Math.random() > 0.6;
-    }
+    // 返回按钮
+    document.getElementById('back-button').addEventListener('click', () => {
+      window.history.back();
+    });
     
-    // 生成时间标签
-    function generateTimeLabels(duration) {
-      const timeLabels = [];
-      const hoursInDay = 24;
-      const intervals = hoursInDay / duration;
-      
-      for (let i = 0; i < intervals; i++) {
-        const hour = Math.floor(i * duration);
-        const minute = (i * duration % 1) * 60;
-        
-        // 只生成6:00到24:00之间的时间
-        if (hour < 6) continue;
-        
-        const hourStr = hour.toString().padStart(2, '0');
-        const minuteStr = minute.toString().padStart(2, '0');
-        timeLabels.push(`${hourStr}:${minuteStr}`);
+    // 页面加载时显示选中的球场名称
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectedCourt = localStorage.getItem('selectedCourt');
+      if (selectedCourt) {
+        document.getElementById('current-court-title').textContent = selectedCourt;
+        document.title = `CourtReserve - ${selectedCourt} Availability`;
       }
       
-      return timeLabels;
-    }
+      // 生成日期选择器
+      generateDateSelector();
+      
+      // 生成时间选择器
+      generateTimeSelector();
+      
+      // 生成评论
+      generateReviews();
+    });
     
-    // 生成日历网格
-    function generateCalendarGrid(duration) {
-      const calendarGrid = document.getElementById('calendar-grid');
-      calendarGrid.innerHTML = '';
+    // 生成日期选择器
+    function generateDateSelector() {
+      const dateSelector = document.getElementById('date-selector');
+      const today = new Date();
       
-      const timeLabels = generateTimeLabels(duration);
-      
-      // 添加标题行
-      const headerEmpty = document.createElement('div');
-      headerEmpty.className = 'header bg-neutral-100 text-neutral-500 font-medium p-3 text-center rounded-tl-lg';
-      calendarGrid.appendChild(headerEmpty);
-      
-      daysOfWeek.forEach((day, index) => {
-        const header = document.createElement('div');
-        header.className = `header bg-neutral-100 text-neutral-500 font-medium p-3 text-center ${index === daysOfWeek.length - 1 ? 'rounded-tr-lg' : ''}`;
-        header.innerHTML = `
-          <div class="font-bold">${day}</div>
-          <div class="text-sm text-neutral-400">${dates[index]}</div>
-        `;
-        calendarGrid.appendChild(header);
-      });
-      
-      // 添加时间行
-      timeLabels.forEach(time => {
-        // 时间标签
-        const timeLabel = document.createElement('div');
-        timeLabel.className = 'time-label bg-neutral-50 text-neutral-600 p-3 text-right font-medium';
-        timeLabel.textContent = time;
-        calendarGrid.appendChild(timeLabel);
+      // 生成未来7天的日期选项
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
         
-        // 每天的时间槽
-        daysOfWeek.forEach((day, index) => {
-          const timeSlot = document.createElement('div');
-          const isBooked = generateRandomBookedStatus();
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNumber = date.getDate();
+        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+        
+        const isToday = i === 0;
+        const dateElement = document.createElement('div');
+        dateElement.className = `flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${isToday ? 'bg-primary/10 border-2 border-primary' : 'hover:bg-neutral-100'}`;
+        dateElement.dataset.date = date.toISOString().split('T')[0];
+        
+        const dayNameElement = document.createElement('div');
+        dayNameElement.className = 'font-medium';
+        dayNameElement.textContent = dayName;
+        
+        const dayNumberElement = document.createElement('div');
+        dayNumberElement.className = 'text-xl font-bold';
+        dayNumberElement.textContent = dayNumber;
+        
+        const monthNameElement = document.createElement('div');
+        monthNameElement.className = 'text-sm text-neutral-500';
+        monthNameElement.textContent = monthName;
+        
+        dateElement.appendChild(dayNameElement);
+        dateElement.appendChild(dayNumberElement);
+        dateElement.appendChild(monthNameElement);
+        
+        dateElement.addEventListener('click', () => {
+          // 移除所有日期的选中状态
+          document.querySelectorAll('#date-selector > div').forEach(el => {
+            el.classList.remove('bg-primary/10', 'border-2', 'border-primary');
+            el.classList.add('hover:bg-neutral-100');
+          });
           
-          timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'} rounded-md`;
-          timeSlot.dataset.time = time;
-          timeSlot.dataset.day = day;
-          timeSlot.textContent = isBooked ? 'Booked' : 'Free';
+          // 添加当前日期的选中状态
+          dateElement.classList.remove('hover:bg-neutral-100');
+          dateElement.classList.add('bg-primary/10', 'border-2', 'border-primary');
           
-          calendarGrid.appendChild(timeSlot);
+          // 更新选中的日期显示
+          document.getElementById('selected-date').textContent = `${dayName}, ${monthName} ${dayNumber}`;
+          
+          // 重新生成时间选择器（实际应用中可能会根据日期加载不同的时间数据）
+          generateTimeSelector();
+          
+          // 重置选中的时间
+          document.getElementById('selected-time').textContent = 'No time selected';
+          document.getElementById('price-display').textContent = '$0.00';
+          document.getElementById('reserve-button').disabled = true;
         });
-      });
+        
+        dateSelector.appendChild(dateElement);
+      }
       
-      // 重新绑定时间槽点击事件
-      bindTimeSlotEvents();
+      // 默认选择今天
+      if (dateSelector.firstChild) {
+        dateSelector.firstChild.click();
+      }
     }
     
-    // 绑定时间槽点击事件
-    function bindTimeSlotEvents() {
-      document.querySelectorAll('.time-slot-available').forEach(slot => {
-        slot.addEventListener('click', () => {
-          // 切换选中状态
-          slot.classList.toggle('time-slot-selected');
-          slot.classList.toggle('time-slot-available');
-          
-          const slotData = {
-            day: slot.dataset.day,
-            time: slot.dataset.time,
-            duration: currentDuration
-          };
-          
-          // 更新选中列表
-          if (slot.classList.contains('time-slot-selected')) {
-            selectedSlots.push(slotData);
-          } else {
-            const index = selectedSlots.findIndex(s => 
-              s.day === slotData.day && s.time === slotData.time && s.duration === slotData.duration
-            );
-            if (index !== -1) {
-              selectedSlots.splice(index, 1);
+    // 生成时间选择器
+    function generateTimeSelector() {
+      const timeSelector = document.getElementById('time-selector');
+      timeSelector.innerHTML = '';
+      
+      // 生成9:00到21:00的时间选项，每小时一个
+      for (let hour = 9; hour < 21; hour++) {
+        const timeSlot = document.createElement('div');
+        timeSlot.className = 'time-slot time-slot-available';
+        timeSlot.dataset.time = `${hour}:00`;
+        
+        const timeDisplay = document.createElement('div');
+        timeDisplay.className = 'text-center';
+        timeDisplay.textContent = `${hour}:00 - ${hour + 1}:00`;
+        
+        // 随机决定该时间段是否已被预订（实际应用中应该从服务器获取真实数据）
+        const isBooked = Math.random() > 0.7; // 30%的概率已被预订
+        
+        if (isBooked) {
+          timeSlot.className = 'time-slot time-slot-booked';
+        } else {
+          timeSlot.addEventListener('click', () => {
+            // 移除所有时间的选中状态
+            document.querySelectorAll('#time-selector > div').forEach(el => {
+              el.classList.remove('time-slot-selected');
+              if (!el.classList.contains('time-slot-booked')) {
+                el.classList.add('time-slot-available');
+              }
+            });
+            
+            // 添加当前时间的选中状态
+            timeSlot.classList.remove('time-slot-available');
+            timeSlot.classList.add('time-slot-selected');
+            
+            // 更新选中的时间显示
+            document.getElementById('selected-time').textContent = `${hour}:00 - ${hour + 1}:00`;
+            
+            // 更新价格显示（根据时间和日期计算价格）
+            const selectedDate = document.querySelector('#date-selector > div.bg-primary\\/10').dataset.date;
+            const selectedDateObj = new Date(selectedDate);
+            const isWeekend = selectedDateObj.getDay() === 0 || selectedDateObj.getDay() === 6;
+            const isEvening = hour >= 17;
+            
+            let price = 25; // 基础价格
+            if (isWeekend) {
+              price = 38; // 周末价格
+            } else if (isEvening) {
+              price = 35; // 晚上价格
             }
+            
+            document.getElementById('price-display').textContent = `$${price}.00`;
+            
+            // 启用预订按钮
+            document.getElementById('reserve-button').disabled = false;
+          });
+        }
+        
+        timeSlot.appendChild(timeDisplay);
+        timeSelector.appendChild(timeSlot);
+      }
+    }
+    
+    // 生成评论
+    function generateReviews() {
+      const reviewsContainer = document.getElementById('reviews-container');
+      
+      const reviews = [
+        {
+          name: "Sarah Johnson",
+          date: "June 15, 2025",
+          rating: 5,
+          comment: "Great court! The surface is in excellent condition and the lighting makes evening play perfect. Booking was easy through the app."
+        },
+        {
+          name: "Michael Chen",
+          date: "June 10, 2025",
+          rating: 5,
+          comment: "I've been coming to this court for years. The staff is always friendly and the facilities are clean. Highly recommend!"
+        },
+        {
+          name: "Emily Rodriguez",
+          date: "June 5, 2025",
+          rating: 4,
+          comment: "Nice courts, a bit busy on weekends but that's to be expected. The online reservation system is very convenient."
+        }
+      ];
+      
+      reviews.forEach(review => {
+        const reviewElement = document.createElement('div');
+        reviewElement.className = 'border-b border-neutral-200 pb-6';
+        
+        const header = document.createElement('div');
+        header.className = 'flex justify-between items-start mb-2';
+        
+        const nameElement = document.createElement('div');
+        nameElement.className = 'font-bold';
+        nameElement.textContent = review.name;
+        
+        const dateElement = document.createElement('div');
+        dateElement.className = 'text-sm text-neutral-500';
+        dateElement.textContent = review.date;
+        
+        header.appendChild(nameElement);
+        header.appendChild(dateElement);
+        
+        const ratingElement = document.createElement('div');
+        ratingElement.className = 'flex mb-2';
+        
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('i');
+          star.className = `fa-solid fa-star ${i <= review.rating ? 'text-yellow-400' : 'text-neutral-300'}`;
+          ratingElement.appendChild(star);
+        }
+        
+        const commentElement = document.createElement('p');
+        commentElement.className = 'text-neutral-600';
+        commentElement.textContent = review.comment;
+        
+        reviewElement.appendChild(header);
+        reviewElement.appendChild(ratingElement);
+        reviewElement.appendChild(commentElement);
+        
+        reviewsContainer.appendChild(reviewElement);
+      });
+    }
+    
+    // 预订按钮点击事件
+    document.getElementById('reserve-button').addEventListener('click', () => {
+      const selectedCourt = localStorage.getItem('selectedCourt');
+      const selectedDate = document.getElementById('selected-date').textContent;
+      const selectedTime = document.getElementById('selected-time').textContent;
+      const price = document.getElementById('price-display').textContent;
+      
+      // 在实际应用中，这里应该跳转到预订确认页面或提交预订请求到服务器
+      alert(`You have successfully reserved ${selectedCourt} on ${selectedDate} at ${selectedTime} for ${price}.`);
+      
+      // 重置选择状态
+      document.querySelectorAll('#time-selector > div').forEach(el => {
+        el.classList.remove('time-slot-selected');
+        if (!el.classList.contains('time-slot-booked')) {
+          el.classList.add('time-slot-available');
+        }
+      });
+      
+      document.getElementById('selected-time').textContent = 'No time selected';
+      document.getElementById('price-display').textContent = '$0.00';
+      document.getElementById('reserve-button').disabled = true;
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
           }
-          
-          // 更新按钮状态
-          updateBookButton();
-        });
-      });
-    }
-    
-    // 时间槽时长选择
-    document.querySelectorAll('.duration-option').forEach(option => {
-      option.addEventListener('click', () => {
-        // 移除所有选项的活跃状态
-        document.querySelectorAll('.duration-option').forEach(opt => {
-          opt.classList.remove('duration-option-active');
-        });
-        
-        // 添加当前选项的活跃状态
-        option.classList.add('duration-option-active');
-        
-        // 更新当前时长
-        currentDuration = parseFloat(option.dataset.duration);
-        
-        // 更新时间标签文本
-        document.querySelector('.text-neutral-500.mb-6').textContent = 
-          `Week view with time slots at ${currentDuration}-hour intervals.`;
-          
-        // 重置选择的时间槽
-        selectedSlots.length = 0;
-        
-        // 重新生成日历网格
-        generateCalendarGrid(currentDuration);
-        
-        // 更新按钮状态
-        updateBookButton();
+        }
       });
     });
-    
-    // 更新预订按钮状态
-    function updateBookButton() {
-      if (selectedSlots.length > 0) {
-        bookButton.disabled = false;
-        bookButton.classList.remove('opacity-50', 'cursor-not-allowed');
-        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (${selectedSlots.length})`;
-      } else {
-        bookButton.disabled = true;
-        bookButton.classList.add('opacity-50', 'cursor-not-allowed');
-        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)`;
-      }
-    }
-    
-    // 预订选中的时间槽
-    bookButton.addEventListener('click', () => {
-      if (selectedSlots.length > 0) {
-        localStorage.setItem('bookingInfo', JSON.stringify({
-          slots: selectedSlots,
-          location: 'City Tennis Center',
-          court: `Court #${Math.floor(Math.random() * 12) + 1}`
-        }));
-        window.location.href = 'confirmation.html';
-      }
-    });
-    
-    // 初始生成日历
-    generateCalendarGrid(currentDuration);
   </script>
 </body>
 </html>
