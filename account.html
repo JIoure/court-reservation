@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
   
-  <!-- Tailwind Configuration（与原始代码一致） -->
+  <!-- Tailwind Configuration -->
   <script>
     tailwind.config = {
       theme: {
@@ -48,7 +48,7 @@
   </style>
 </head>
 <body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
-  <!-- 导航栏（Account 激活，与原始代码一致） -->
+  <!-- 导航栏 -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -94,7 +94,7 @@
     </div>
   </nav>
 
-  <!-- 主内容：包含登录/注册表单（与原始代码一致） -->
+  <!-- 主内容 -->
   <main class="flex-grow container mx-auto px-4 py-8">
     <section id="login" class="mb-12 bg-white rounded-xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-md">
       <div class="flex justify-between items-center mb-6">
@@ -102,18 +102,16 @@
           <i class="fa-solid fa-user text-primary mr-3"></i>
           Account Access
         </h2>
-        <div class="text-neutral-500">
-          Already have an account? <a href="#login" class="text-primary font-medium hover:underline">Sign in</a>
-        </div>
+        <!-- 已移除"Already have an account? Sign in"文字 -->
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- 登录表单（与原始代码一致） -->
+        <!-- 登录表单 -->
         <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
           <h3 class="text-xl font-bold text-neutral-800 mb-4">Sign In</h3>
           <p class="text-neutral-500 mb-6">Access your account to manage reservations and preferences.</p>
           
-          <form>
+          <form id="login-form">
             <div class="mb-4">
               <label for="email" class="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
               <div class="relative">
@@ -168,7 +166,7 @@
           </div>
         </div>
         
-        <!-- 注册表单（与原始代码一致） -->
+        <!-- 注册表单 -->
         <div class="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
           <h3 class="text-xl font-bold text-neutral-800 mb-4">Create Account</h3>
           <p class="text-neutral-500 mb-6">Register to reserve courts and connect with other players.</p>
@@ -268,7 +266,7 @@
     </section>
   </main>
 
-  <!-- 完整页脚（与原始代码一致，包含所有子选项） -->
+  <!-- 完整页脚 -->
   <footer class="bg-neutral-800 text-white py-12">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -345,7 +343,7 @@
     </div>
   </footer>
 
-  <!-- JavaScript（与原始代码一致，包含移动端菜单切换逻辑） -->
+  <!-- JavaScript -->
   <script>
     // 移动端菜单切换
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -355,7 +353,19 @@
       mobileMenu.classList.toggle('hidden');
     });
     
-    // 平滑滚动（如需在账户页内跳转可保留）
+    // 登录表单提交事件 - 跳转到availability.html
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // 阻止表单默认提交行为
+        
+        // 在实际应用中，这里应该先验证用户凭据
+        // 这里简化处理，直接跳转
+        window.location.href = 'availability.html';
+      });
+    }
+    
+    // 平滑滚动
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -366,11 +376,10 @@
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           window.scrollTo({
-            top: targetElement.offsetTop - 80, // 适配导航栏高度
+            top: targetElement.offsetTop - 80,
             behavior: 'smooth'
           });
           
-          // 关闭移动端菜单
           if (!mobileMenu.classList.contains('hidden')) {
             mobileMenu.classList.add('hidden');
           }
