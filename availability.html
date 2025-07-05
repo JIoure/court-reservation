@@ -58,6 +58,12 @@
       .nav-item-active {
         @apply bg-primary/10 text-primary font-medium;
       }
+      .duration-option {
+        @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
+      }
+      .duration-option-active {
+        @apply bg-primary text-white;
+      }
     }
   </style>
 </head>
@@ -115,7 +121,7 @@
         </h2>
         <div class="flex space-x-2">
           <button id="book-selected" class="px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-all duration-300 flex items-center opacity-50 cursor-not-allowed" disabled>
-            <i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (0)
+            <i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)
           </button>
           <div class="relative">
             <button class="px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg shadow-sm hover:bg-neutral-300 transition-all duration-300 flex items-center">
@@ -125,7 +131,21 @@
           </div>
         </div>
       </div>
-      <p class="text-neutral-500 mb-6">Week view with 24-hour time slots at 2-hour intervals.</p>
+      
+      <!-- 新增：时间槽时长选择 -->
+      <div class="mb-6 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+        <div class="flex items-center">
+          <span class="text-neutral-600 mr-3 font-medium">Timeslot Duration:</span>
+          <div class="flex space-x-2">
+            <div class="duration-option duration-option-active" data-duration="0.5">0.5 hours</div>
+            <div class="duration-option" data-duration="1">1 hour</div>
+            <div class="duration-option" data-duration="1.5">1.5 hours</div>
+            <div class="duration-option" data-duration="2">2 hours</div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-neutral-500 mb-6">Week view with time slots at selected intervals.</p>
       <div class="flex items-center space-x-4 mb-6">
         <div class="flex items-center">
           <div class="w-4 h-4 rounded-full bg-success/10 border border-success/30 mr-2"></div>
@@ -426,15 +446,48 @@
     // 时间槽多选逻辑
     const selectedSlots = [];
     const bookButton = document.getElementById('book-selected');
+    let currentDuration = 0.5; // 默认时长
+    
+    // 时间槽时长选择
+    document.querySelectorAll('.duration-option').forEach(option => {
+      option.addEventListener('click', () => {
+        // 移除所有选项的活跃状态
+        document.querySelectorAll('.duration-option').forEach(opt => {
+          opt.classList.remove('duration-option-active');
+        });
+        
+        // 添加当前选项的活跃状态
+        option.classList.add('duration-option-active');
+        
+        // 更新当前时长
+        currentDuration = parseFloat(option.dataset.duration);
+        
+        // 更新时间标签文本
+        document.querySelector('.text-neutral-500.mb-6').textContent = 
+          `Week view with time slots at ${currentDuration}-hour intervals.`;
+          
+        // 重置选择的时间槽
+        selectedSlots.length = 0;
+        document.querySelectorAll('.time-slot-selected').forEach(slot => {
+          slot.classList.remove('time-slot-selected');
+          slot.classList.add('time-slot-available');
+        });
+        
+        // 更新按钮状态
+        updateBookButton();
+      });
+    });
     
     document.querySelectorAll('.time-slot-available').forEach(slot => {
       slot.addEventListener('click', () => {
         // 切换选中状态
         slot.classList.toggle('time-slot-selected');
+        slot.classList.toggle('time-slot-available');
         
         const slotData = {
           day: slot.dataset.day,
-          time: slot.dataset.time
+          time: slot.dataset.time,
+          duration: currentDuration
         };
         
         // 更新选中列表
@@ -442,7 +495,7 @@
           selectedSlots.push(slotData);
         } else {
           const index = selectedSlots.findIndex(s => 
-            s.day === slotData.day && s.time === slotData.time
+            s.day === slotData.day && s.time === slotData.time && s.duration === slotData.duration
           );
           if (index !== -1) {
             selectedSlots.splice(index, 1);
@@ -459,11 +512,11 @@
       if (selectedSlots.length > 0) {
         bookButton.disabled = false;
         bookButton.classList.remove('opacity-50', 'cursor-not-allowed');
-        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (${selectedSlots.length})`;
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (${selectedSlots.length})`;
       } else {
         bookButton.disabled = true;
         bookButton.classList.add('opacity-50', 'cursor-not-allowed');
-        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Book Selected (0)`;
+        bookButton.innerHTML = `<i class="fa-solid fa-calendar-plus mr-2"></i>Reserve Selected Timeslot (0)`;
       }
     }
     
@@ -480,4 +533,4 @@
     });
   </script>
 </body>
-</html>  
+</html>
