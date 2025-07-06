@@ -48,16 +48,16 @@
         @apply bg-primary/10 text-primary font-medium;
       }
       .time-slot {
-        @apply p-2 rounded-lg cursor-pointer transition-all duration-200 font-medium;
+        @apply p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 font-medium mx-auto max-w-md sm:max-w-lg md:max-w-xl w-full; /* 新增响应式宽度限制和自动留白 */
       }
       .time-slot-available {
-        @apply bg-success text-white hover:bg-success/90; /* 实心可用状态 */
+        @apply bg-success text-white hover:bg-success/90;
       }
       .time-slot-booked {
-        @apply bg-neutral-300 text-neutral-600 cursor-not-allowed; /* 实心已预订状态 */
+        @apply bg-neutral-300 text-neutral-600 cursor-not-allowed;
       }
       .time-slot-selected {
-        @apply bg-primary text-white; /* 实心选中状态 */
+        @apply bg-primary text-white;
       }
       .duration-option {
         @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
@@ -179,15 +179,15 @@
       <p class="text-neutral-500 mb-6">Time slots at <span id="interval-text">0.5-hour</span> intervals.</p>
       <div class="flex items-center space-x-4 mb-6">
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-success mr-2"></div> <!-- 实心图例 -->
+          <div class="w-4 h-4 rounded-full bg-success mr-2"></div>
           <span class="text-sm text-neutral-600">Available</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-neutral-300 mr-2"></div> <!-- 实心图例 -->
+          <div class="w-4 h-4 rounded-full bg-neutral-300 mr-2"></div>
           <span class="text-sm text-neutral-600">Booked</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-primary mr-2"></div> <!-- 实心图例 -->
+          <div class="w-4 h-4 rounded-full bg-primary mr-2"></div>
           <span class="text-sm text-neutral-600">Selected</span>
         </div>
       </div>
