@@ -13,11 +13,19 @@
       theme: {
         extend: {
           colors: {
-            primary: '#81B4FF', // 降低饱和度的主色
-            success: '#66BB6A', // 降低饱和度的可用色
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            success: '#00B42A',
+            warning: '#FF7D00',
+            danger: '#F53F3F',
             neutral: {
-              300: '#E0E0E0', // 降低饱和度的已预订色
-              600: '#757575', // 匹配已预订的文本色
+              100: '#F2F3F5',
+              200: '#E5E6EB',
+              300: '#C9CDD4',
+              400: '#86909C',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
             }
           },
           fontFamily: {
@@ -40,16 +48,16 @@
         @apply bg-primary/10 text-primary font-medium;
       }
       .time-slot {
-        @apply rounded-lg cursor-pointer transition-all duration-200 font-medium;
+        @apply p-2 rounded-lg cursor-pointer transition-all duration-200 font-medium;
       }
       .time-slot-available {
-        @apply bg-success/90 text-white hover:bg-success; /* 降低饱和度的可用状态 */
+        @apply bg-success text-white hover:bg-success/90; /* 实心可用状态 */
       }
       .time-slot-booked {
-        @apply bg-neutral-300 text-neutral-600 cursor-not-allowed; /* 降低饱和度的已预订状态 */
+        @apply bg-neutral-300 text-neutral-600 cursor-not-allowed; /* 实心已预订状态 */
       }
       .time-slot-selected {
-        @apply bg-primary text-white; /* 降低饱和度的选中状态 */
+        @apply bg-primary text-white; /* 实心选中状态 */
       }
       .duration-option {
         @apply px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 hover:bg-primary/10;
@@ -171,15 +179,15 @@
       <p class="text-neutral-500 mb-6">Time slots at <span id="interval-text">0.5-hour</span> intervals.</p>
       <div class="flex items-center space-x-4 mb-6">
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-success mr-2"></div> <!-- 降低饱和度的图例 -->
+          <div class="w-4 h-4 rounded-full bg-success mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Available</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-neutral-300 mr-2"></div> <!-- 降低饱和度的图例 -->
+          <div class="w-4 h-4 rounded-full bg-neutral-300 mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Booked</span>
         </div>
         <div class="flex items-center">
-          <div class="w-4 h-4 rounded-full bg-primary mr-2"></div> <!-- 降低饱和度的图例 -->
+          <div class="w-4 h-4 rounded-full bg-primary mr-2"></div> <!-- 实心图例 -->
           <span class="text-sm text-neutral-600">Selected</span>
         </div>
       </div>
@@ -539,24 +547,23 @@
       // 生成时间标签（6:00到24:00）
       const timeLabels = generateTimeLabels(duration);
       
-      // 生成时间槽（响应式大小）
+      // 生成时间槽
       timeLabels.forEach(time => {
         const timeSlotRow = document.createElement('div');
         timeSlotRow.className = 'flex items-center border-b border-neutral-200 last:border-0';
         
-        // 时间标签（响应式宽度）
+        // 时间标签
         const timeLabel = document.createElement('div');
-        timeLabel.className = 'w-16 sm:w-20 text-neutral-600 p-2 sm:p-3 text-right font-medium text-sm sm:text-base';
+        timeLabel.className = 'w-20 text-neutral-600 p-3 text-right font-medium';
         timeLabel.textContent = time;
         timeSlotRow.appendChild(timeLabel);
         
-        // 时间槽（响应式大小）
+        // 时间槽
         const timeSlot = document.createElement('div');
         const isBooked = generateRandomBookedStatus();
         const endTime = calculateEndTime(time, duration);
         
-        // 响应式内边距和字体大小
-        timeSlot.className = `time-slot p-1.5 sm:p-2 md:p-3 text-sm sm:text-base ${isBooked ? 'time-slot-booked' : 'time-slot-available'}`;
+        timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'}`;
         timeSlot.dataset.time = time;
         timeSlot.dataset.endTime = endTime;
         timeSlot.dataset.date = date.toISOString().split('T')[0];
