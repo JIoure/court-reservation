@@ -555,8 +555,8 @@
       baseTimeSlots[dateStr] = {};
       
       baseTimeLabels.forEach(time => {
-        // 随机生成基础时间段的可用性（60%可用）
-        baseTimeSlots[dateStr][time] = Math.random() > 0.1;
+        // 随机生成基础时间段的可用性（80%可用）
+        baseTimeSlots[dateStr][time] = Math.random() > 0.2;
       });
     }
     
