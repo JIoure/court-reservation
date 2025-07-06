@@ -48,7 +48,7 @@
         @apply bg-primary/10 text-primary font-medium;
       }
       .time-slot {
-        @apply p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 font-medium mx-auto max-w-md sm:max-w-lg md:max-w-xl w-full; /* 新增响应式宽度限制和自动留白 */
+        @apply p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 font-medium mx-auto max-w-md sm:max-w-lg md:max-w-xl w-full;
       }
       .time-slot-available {
         @apply bg-success text-white hover:bg-success/90;
@@ -447,6 +447,9 @@
       mobileMenu.classList.toggle('hidden');
     });
     
+    // 存储每个日期的30分钟基础时间段状态
+    const baseTimeSlots = {};
+    
     // 页面加载时显示选中的球场名称
     document.addEventListener('DOMContentLoaded', () => {
       const selectedCourt = localStorage.getItem('selectedCourt');
@@ -512,8 +515,14 @@
           // 记录选中的日期
           selectedDateObj = date;
           
-          // 生成该日期的时间槽
-          generateTimeSlotsForDate(date, currentDuration);
+          // 检查是否已有该日期的基础时间段数据
+          if (!baseTimeSlots[date.toISOString().split('T')[0]]) {
+            // 如果没有，生成并保存30分钟基础时间段
+            generateAndSaveBaseTimeSlots(date);
+          }
+          
+          // 基于基础时间段生成当前时长的时间槽
+          generateTimeSlotsFromBase(date, currentDuration);
           
           // 重置选择状态
           selectedSlots.length = 0;
@@ -528,26 +537,37 @@
         }
       }
       
-      // 默认生成今天的时间槽
+      // 默认生成今天的基础时间段和时间槽
       if (selectedDateObj) {
-        generateTimeSlotsForDate(selectedDateObj, currentDuration);
+        const dateStr = selectedDateObj.toISOString().split('T')[0];
+        if (!baseTimeSlots[dateStr]) {
+          generateAndSaveBaseTimeSlots(selectedDateObj);
+        }
+        generateTimeSlotsFromBase(selectedDateObj, currentDuration);
       }
     }
     
-    // 时间槽多选逻辑
-    const selectedSlots = [];
-    const bookButton = document.getElementById('book-selected');
-    let currentDuration = 0.5; // 默认时长
+    // 生成并保存30分钟基础时间段
+    function generateAndSaveBaseTimeSlots(date) {
+      const dateStr = date.toISOString().split('T')[0];
+      const baseTimeLabels = generateTimeLabels(0.5); // 30分钟为基础单位
+      
+      baseTimeSlots[dateStr] = {};
+      
+      baseTimeLabels.forEach(time => {
+        // 随机生成基础时间段的可用性（60%可用）
+        baseTimeSlots[dateStr][time] = Math.random() > 0.4;
+      });
+    }
     
-    // 生成指定日期的时间槽
-    function generateTimeSlotsForDate(date, duration) {
+    // 基于基础时间段生成当前时长的时间槽
+    function generateTimeSlotsFromBase(date, duration) {
       const calendarGrid = document.getElementById('calendar-grid');
       calendarGrid.innerHTML = '';
       
-      // 生成时间标签（6:00到24:00）
+      const dateStr = date.toISOString().split('T')[0];
       const timeLabels = generateTimeLabels(duration);
       
-      // 生成时间槽
       timeLabels.forEach(time => {
         const timeSlotRow = document.createElement('div');
         timeSlotRow.className = 'flex items-center border-b border-neutral-200 last:border-0';
@@ -560,17 +580,19 @@
         
         // 时间槽
         const timeSlot = document.createElement('div');
-        const isBooked = generateRandomBookedStatus();
         const endTime = calculateEndTime(time, duration);
         
-        timeSlot.className = `time-slot ${isBooked ? 'time-slot-booked' : 'time-slot-available'}`;
+        // 检查是否所有基础时间段都可用
+        const isAvailable = checkAvailabilityFromBase(dateStr, time, duration);
+        
+        timeSlot.className = `time-slot ${!isAvailable ? 'time-slot-booked' : 'time-slot-available'}`;
         timeSlot.dataset.time = time;
         timeSlot.dataset.endTime = endTime;
-        timeSlot.dataset.date = date.toISOString().split('T')[0];
+        timeSlot.dataset.date = dateStr;
         timeSlot.textContent = `${time} - ${endTime}`;
         
         // 添加点击事件（仅对可用时间槽）
-        if (!isBooked) {
+        if (isAvailable) {
           timeSlot.addEventListener('click', () => handleTimeSlotClick(timeSlot, date));
         }
         
@@ -578,6 +600,36 @@
         calendarGrid.appendChild(timeSlotRow);
       });
     }
+    
+    // 检查基础时间段的可用性
+    function checkAvailabilityFromBase(dateStr, startTime, duration) {
+      // 转换为分钟数便于计算
+      const [startHour, startMinute] = startTime.split(':').map(Number);
+      const startTotalMinutes = startHour * 60 + startMinute;
+      const totalMinutesNeeded = duration * 60;
+      
+      // 检查每个30分钟的基础时间段是否都可用
+      for (let minutes = 0; minutes < totalMinutesNeeded; minutes += 30) {
+        const currentTotalMinutes = startTotalMinutes + minutes;
+        const currentHour = Math.floor(currentTotalMinutes / 60);
+        const currentMinute = currentTotalMinutes % 60;
+        
+        // 格式化时间字符串
+        const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+        
+        // 检查该基础时间段是否存在且可用
+        if (!baseTimeSlots[dateStr] || !baseTimeSlots[dateStr][currentTime]) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    // 时间槽多选逻辑
+    const selectedSlots = [];
+    const bookButton = document.getElementById('book-selected');
+    let currentDuration = 0.5; // 默认时长
     
     // 生成时间标签
     function generateTimeLabels(duration) {
@@ -608,12 +660,6 @@
       const endMinutes = totalMinutes % 60;
       
       return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
-    }
-    
-    // 生成随机的预订状态
-    function generateRandomBookedStatus() {
-      // 60% 概率可用，40% 概率已预订
-      return Math.random() > 0.6;
     }
     
     // 处理时间槽点击 - 实现多选功能
@@ -669,11 +715,11 @@
         // 重置选择的时间槽
         selectedSlots.length = 0;
         
-        // 重新生成当前选中日期的时间槽
+        // 基于基础时间段重新生成时间槽
         const selectedDateEl = document.querySelector('#date-selector > div.bg-primary\\/10');
         if (selectedDateEl) {
           const selectedDate = new Date(selectedDateEl.dataset.date);
-          generateTimeSlotsForDate(selectedDate, currentDuration);
+          generateTimeSlotsFromBase(selectedDate, currentDuration);
         }
         
         // 更新按钮状态
