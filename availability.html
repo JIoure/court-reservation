@@ -634,7 +634,7 @@
     // 生成时间标签
     function generateTimeLabels(duration) {
       const timeLabels = [];
-      const hoursInDay = 24;
+      const hoursInDay = 22;
       const intervals = hoursInDay / duration;
       
       for (let i = 0; i < intervals; i++) {
@@ -642,7 +642,7 @@
         const minute = (i * duration % 1) * 60;
         
         // 只生成6:00到24:00之间的时间
-        if (hour < 10) continue;
+        if (hour < 6) continue;
         
         const hourStr = hour.toString().padStart(2, '0');
         const minuteStr = minute.toString().padStart(2, '0');
